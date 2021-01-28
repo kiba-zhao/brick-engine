@@ -3,7 +3,7 @@
   "recurseDepth": 10,
   "sourceType": "module",
   "source": {
-    "include": ["index.js","lib"],
+    "include": ["*.js","plugins"],
     "includePattern": ".+\\.js$",
     "excludePattern": "(^|\\/|\\\\)_"
   },

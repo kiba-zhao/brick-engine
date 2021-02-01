@@ -7,17 +7,17 @@
 'use strict';
 
 exports.provide = {
-  package: 'xprovide'
+  package: 'xprovide',
 };
 
 exports.config = {
-  package: './plugins/config'
+  package: './plugins/config',
 };
 
 exports.env = {
-  package: './plugins/env'
+  package: './plugins/env',
 };
 
 exports.inject = {
-  package: './plugins/inject'
+  package: './plugins/inject',
 };

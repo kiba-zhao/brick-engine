@@ -16,13 +16,11 @@ function createInjector(loader) {
   const deps = [];
   const ids = [];
   const depsCache = {};
-  for (let item of loader) {
+  for (const item of loader) {
     const module = parseModule(item);
-    if (!module || !module.name)
-      continue;
-    for (let dep of module.deps) {
-      if (depsCache[dep.id] === true)
-        continue;
+    if (!module || !module.name) { continue; }
+    for (const dep of module.deps) {
+      if (depsCache[dep.id] === true) { continue; }
       deps.push(dep);
       ids.push(dep.id);
       depsCache[dep.id] = dep.required;
@@ -35,15 +33,14 @@ function createInjector(loader) {
 function createInjectModule(deps, modules, ...args) {
   const depsCache = {};
   for (let i = 0; i < deps.length; i++) {
-    if (args[i] === undefined)
-      continue;
+    if (args[i] === undefined) { continue; }
     depsCache[deps[i]] = args[i];
   }
 
   const injectModule = {};
-  for (let module of modules) {
+  for (const module of modules) {
     const moduleDeps = [];
-    for (let dep of module.deps) {
+    for (const dep of module.deps) {
       assert(dep.required === false || depsCache[dep.id] !== undefined, `Plugin Inject Error: module ${module.name} is pending`);
       moduleDeps.push(depsCache[dep.id]);
     }
@@ -55,11 +52,12 @@ function createInjectModule(deps, modules, ...args) {
 const INJECT_TAG = 'inject';
 const DEPENDENCY_TAG = 'dependency';
 function parseModule(item) {
-  let name, deps = [];
+  let name;
+  const deps = [];
   const content = fs.readFileSync(item.path, { encoding: 'utf8' });
   const ast = parse(content);
-  for (let block of ast) {
-    for (let tag of block.tags) {
+  for (const block of ast) {
+    for (const tag of block.tags) {
       if (tag.tag === INJECT_TAG) {
         name = name || tag.name;
       } else if (tag.tag === DEPENDENCY_TAG) {

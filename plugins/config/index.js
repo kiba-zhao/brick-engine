@@ -14,13 +14,13 @@ const { isFunction, defaultsDeep } = require('lodash');
  * @param {Array<Module>} entries config入口
  * @param {String} env 配置环境变量
  * @param {Object} ctx 上下文环境对象
- * @returns {Object} config配置对象
+ * @return {Object} config配置对象
  */
 function createConfig(entries, env, ctx) {
 
   let defaultConfig = {};
   let config = {};
-  for (let entry of entries) {
+  for (const entry of entries) {
     const name = path.basename(entry.path, '.js');
     const content = isFunction(entry.content) ? entry.content(ctx) : entry.content;
     if (name === env) {
@@ -35,4 +35,4 @@ function createConfig(entries, env, ctx) {
 
 }
 
-module.createConfig = createConfig;
+exports.createConfig = createConfig;

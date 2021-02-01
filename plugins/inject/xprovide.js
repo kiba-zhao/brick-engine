@@ -8,17 +8,17 @@
 
 const { createInjector } = require('.');
 
-module.exports = (provider) => {
-  provider.require(['boot', 'config'], (boot, config) => injectorFactory(provider, boot, config.inject));
+module.exports = provider => {
+  provider.require([ 'boot', 'config' ], (boot, config) => injectorFactory(provider, boot, config.inject));
 };
 
 function injectorFactory(provider, boot, configs) {
 
-  if (!config) {
+  if (!configs) {
     return;
   }
 
-  for (let id in configs) {
+  for (const id in configs) {
     const config = configs[id];
     const loader = boot.createBootLoader(config.pattern, boot.context, config.opts || {});
     const injector = createInjector(loader);

@@ -10,9 +10,9 @@ const { createEnv } = require('.');
 
 /**
  * xprovide提供器入口函数
- * @param {Provider} provider
+ * @param {Provider} provider 提供器对象实例
  */
-module.exports = (provider) => {
-  provider.define('config', [], createEnv);
+module.exports = provider => {
+  provider.define('env', [], createEnv);
 };
 

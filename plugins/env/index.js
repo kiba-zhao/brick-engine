@@ -6,12 +6,10 @@
  */
 'use strict';
 
-const process = require('process');
-
 /**
  * 创建env环境变量对象函数
- * @param {Object} env 进程环境变量
- * @returns {Object} 环境变量
+ * @param {Object} [env=process.env] 进程环境变量
+ * @return {Object} 环境变量
  */
 exports.createEnv = (env = process.env) => {
   let XBLOCK_CONFIG = env.XBLOCK_CONFIG;

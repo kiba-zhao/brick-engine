@@ -4,6 +4,7 @@
   "sourceType": "module",
   "source": {
     "include": ["*.js","plugins"],
+    "exclude": ["plugins/*/test"],
     "includePattern": ".+\\.js$",
     "excludePattern": "(^|\\/|\\\\)_"
   },

@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "comment-parser": "^1.1.1",
+    "is-class": "0.0.9",
     "lodash": "^4.17.20",
     "xprovide": "^0.2.0"
   },

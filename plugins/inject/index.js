@@ -8,8 +8,10 @@
 
 const assert = require('assert');
 const { isFunction } = require('lodash');
+const isClass = require('is-class');
 const { parse } = require('comment-parser');
 const fs = require('fs');
+const path = require('path');
 
 function createInjector(loader) {
   const modules = [];
@@ -44,7 +46,14 @@ function createInjectModule(deps, modules, ...args) {
       assert(dep.required === false || depsCache[dep.id] !== undefined, `Plugin Inject Error: module ${module.name} is pending`);
       moduleDeps.push(depsCache[dep.id]);
     }
-    injectModule[module.name] = isFunction(module.factory) ? module.factory(...moduleDeps) : module.factory;
+
+    if (isClass(module.factory)) {
+      injectModule[module.name] = new module.factory(...moduleDeps);
+    } else if (isFunction(module.factory)) {
+      injectModule[module.name] = module.factory(...moduleDeps);
+    } else {
+      injectModule[module.name] = module.factory;
+    }
   }
   return injectModule;
 }
@@ -54,7 +63,7 @@ const DEPENDENCY_TAG = 'dependency';
 function parseModule(item) {
   let name;
   const deps = [];
-  const content = fs.readFileSync(item.path, { encoding: 'utf8' });
+  const content = fs.readFileSync(path.join(item.cwd, item.path), { encoding: 'utf8' });
   const ast = parse(content);
   for (const block of ast) {
     for (const tag of block.tags) {

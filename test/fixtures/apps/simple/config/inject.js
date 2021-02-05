@@ -8,5 +8,5 @@
 
 exports.inject = {
   moduleA: { pattern: 'moduleA/**/*.js' },
-  moduleB: { pattern: 'moduleB/**/*.js' }
+  moduleB: { pattern: 'moduleB/**/*.js' },
 };

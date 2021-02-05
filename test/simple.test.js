@@ -55,8 +55,8 @@ describe('simple', () => {
 
     loader.forEach(_ => xboot.setup(_, xboot, context));
 
-    provider.require(['env'], envFn);
-    provider.require(['config'], configFn);
+    provider.require([ 'env' ], envFn);
+    provider.require([ 'config' ], configFn);
 
     expect(Provider).toBeCalledTimes(1);
     expect(Provider).toBeCalledWith();
@@ -87,8 +87,8 @@ describe('simple', () => {
 
     loader.forEach(_ => xboot.setup(_, xboot, context));
 
-    provider.require(['env'], envFn);
-    provider.require(['config'], configFn);
+    provider.require([ 'env' ], envFn);
+    provider.require([ 'config' ], configFn);
 
     expect(Provider).toBeCalledTimes(1);
     expect(Provider).toBeCalledWith();
@@ -120,8 +120,8 @@ describe('simple', () => {
 
     loader.forEach(_ => xboot.setup(_, xboot, context));
 
-    provider.require(['env'], envFn);
-    provider.require(['config'], configFn);
+    provider.require([ 'env' ], envFn);
+    provider.require([ 'config' ], configFn);
 
     expect(Provider).toBeCalledTimes(1);
     expect(Provider).toBeCalledWith();
@@ -155,8 +155,8 @@ describe('simple', () => {
 
     loader.forEach(_ => xboot.setup(_, xboot, context));
 
-    provider.require(['env'], envFn);
-    provider.require(['config'], configFn);
+    provider.require([ 'env' ], envFn);
+    provider.require([ 'config' ], configFn);
 
     expect(Provider).toBeCalledTimes(1);
     expect(Provider).toBeCalledWith();
@@ -184,10 +184,10 @@ describe('simple', () => {
 
     loader.forEach(_ => xboot.setup(_, xboot, context));
 
-    provider.require(['env'], envFn);
-    provider.require(['config'], configFn);
-    provider.require(['moduleA'], moduleAFn);
-    provider.require(['moduleB'], moduleBFn);
+    provider.require([ 'env' ], envFn);
+    provider.require([ 'config' ], configFn);
+    provider.require([ 'moduleA' ], moduleAFn);
+    provider.require([ 'moduleB' ], moduleBFn);
 
     expect(Provider).toBeCalledTimes(1);
     expect(Provider).toBeCalledWith();
@@ -205,7 +205,7 @@ describe('simple', () => {
     expect(moduleAFn).toBeCalledTimes(1);
     const moduleA = moduleAFn.mock.calls[0][0];
     const moduleAKeys = Object.keys(moduleA);
-    expect(moduleAKeys).toEqual(['modelA', 'modelB', 'modelC']);
+    expect(moduleAKeys).toEqual([ 'modelA', 'modelB', 'modelC' ]);
     // expect(moduleA.modelA).toBeInstanceOf(MODEL_A_CLASS);
     expect(moduleA.modelA.constructor.name).toBe(MODEL_A_CLASS.name);
     expect(moduleA.modelA.env).toEqual(env);

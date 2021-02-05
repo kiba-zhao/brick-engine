@@ -16,6 +16,7 @@ const LOCAL_CONFIG = require('./fixtures/apps/simple/config/local');
 const PROD_CONFIG = require('./fixtures/apps/simple/config/prod');
 const CUSTOM_CONFIG_FUN = require('./fixtures/apps/simple/config/custom');
 const INJECT_CONFIG = require('./fixtures/apps/simple/config/inject');
+const LOG_CONFIG = require('./fixtures/apps/simple/config/log');
 const MODEL_A_CLASS = require('./fixtures/apps/simple/moduleA/model_a');
 const MODEL_B = require('./fixtures/apps/simple/moduleA/dir_a/model_b');
 
@@ -23,11 +24,13 @@ describe('simple', () => {
 
   let loader;
   let provider;
+  const configure = jest.fn();
   const Provider = jest.fn();
   const context = {};
 
   beforeAll(() => {
     jest.doMock('xprovide', () => ({ Provider }), { virtual: true });
+    jest.doMock('log4js', () => ({ configure }), { virtual: true });
     jest.resetModules();
   });
 
@@ -41,11 +44,13 @@ describe('simple', () => {
 
   afterEach(() => {
     Provider.mockReset();
+    configure.mockReset();
   });
 
 
   afterAll(() => {
     jest.dontMock('xprovide');
+    jest.dontMock('log4js');
   });
 
   it('boot local', () => {
@@ -217,5 +222,40 @@ describe('simple', () => {
     expect(moduleBFn).toBeCalledTimes(1);
     const moduleB = moduleBFn.mock.calls[0][0];
     expect(moduleB).toEqual({});
+  });
+
+  it('boot log', () => {
+    const envFn = jest.fn();
+    const configFn = jest.fn();
+    const logFn = jest.fn();
+
+    const XBLOCK_CONFIG = process.env.XBLOCK_CONFIG;
+    process.env.XBLOCK_CONFIG = 'log';
+
+    loader.forEach(_ => xboot.setup(_, xboot, context));
+
+    provider.require([ 'env' ], envFn);
+    provider.require([ 'config' ], configFn);
+    provider.require([ 'log' ], logFn);
+
+    expect(Provider).toBeCalledTimes(1);
+    expect(Provider).toBeCalledWith();
+
+    expect(envFn).toBeCalledTimes(1);
+    const env = envFn.mock.calls[0][0];
+    expect(env).toEqual({ ...process.env, XBLOCK_CONFIG: 'log' });
+
+    expect(configFn).toBeCalledTimes(1);
+    const config = configFn.mock.calls[0][0];
+    expect(config).toEqual({
+      ...DEFAULT_CONFIG, ...LOG_CONFIG,
+    });
+
+    process.env.XBLOCK_CONFIG = XBLOCK_CONFIG;
+
+    expect(logFn).toBeCalledTimes(1);
+    expect(logFn).toBeCalledWith(require('log4js'));
+    expect(configure).toBeCalledTimes(1);
+    expect(configure).toBeCalledWith(config.log);
   });
 });

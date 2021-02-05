@@ -14,3 +14,7 @@ export namespace inject {
     const _package_3: string;
     export { _package_3 as package };
 }
+export namespace log {
+    const _package_4: string;
+    export { _package_4 as package };
+}

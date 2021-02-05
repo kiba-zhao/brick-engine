@@ -21,3 +21,7 @@ exports.env = {
 exports.inject = {
   package: './plugins/inject',
 };
+
+exports.log = {
+  package: './plugins/log4js',
+};

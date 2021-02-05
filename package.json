@@ -52,6 +52,7 @@
     "comment-parser": "^1.1.1",
     "is-class": "0.0.9",
     "lodash": "^4.17.20",
+    "log4js": "^6.3.0",
     "xprovide": "^0.3.0"
   },
   "husky": {

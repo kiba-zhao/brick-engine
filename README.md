@@ -1,10 +1,10 @@
-# xblock #
-基于依赖注入模式([xprovide](https://github.com/kiba-zhao/xprovide))的基础工具engine．提供环境变量,配置文件内容以及功能模型注入插件．作为应用的最基本核心engine使用．
+# brick-engine #
+基于依赖注入模式([xprovide](https://github.com/kiba-zhao/xprovide))的基础工具engine．提供环境变量,配置文件内容以及功能模型注入插件．作为搭建应用的最基本engine使用．
 
 ## Install ##
 
 ``` shell
-npm install --save @kibamaple/xblock
+npm install --save @brick/engine
 ```
 
 ## Usage ##
@@ -16,7 +16,7 @@ npm install --save @kibamaple/xblock
 // {cwd}/xboot.config.js
 // {cwd}/node_modules/{xxx engine}/xboot.config.js
 
-exports.engine = '@kibamaple/xblock'
+exports.engine = '@brick/engine'
 ```
 
 ### StartUp ###

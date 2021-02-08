@@ -1,5 +1,5 @@
 {
-  "name": "@kibamaple/xblock",
+  "name": "@brick/engine",
   "version": "0.1.1",
   "description": "basic xboot engine",
   "main": "index.js",
@@ -22,19 +22,20 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kiba-zhao/xblock.git"
+    "url": "git+https://github.com/kiba-zhao/brick-engine.git"
   },
   "keywords": [
     "xboot",
     "xprovide",
+    "brick",
     "engine"
   ],
   "author": "kiba.x.zhao",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kiba-zhao/xblock/issues"
+    "url": "https://github.com/kiba-zhao/brick-engine/issues"
   },
-  "homepage": "https://github.com/kiba-zhao/xblock#readme",
+  "homepage": "https://github.com/kiba-zhao/brick-engine#readme",
   "devDependencies": {
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.167",

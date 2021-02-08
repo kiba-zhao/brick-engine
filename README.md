@@ -105,7 +105,7 @@ module.exports = SimpleModel;
 
 ``` shell
 git clone https://github.com/kiba-zhao/brick-engine.git
-cd xblock
+cd brick-engine
 npm install
 npm run docs
 open docs/index.html

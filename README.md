@@ -4,7 +4,7 @@
 ## Install ##
 
 ``` shell
-npm install --save xblock
+npm install --save @kibamaple/xblock
 ```
 
 ## Usage ##
@@ -16,7 +16,7 @@ npm install --save xblock
 // {cwd}/xboot.config.js
 // {cwd}/node_modules/{xxx engine}/xboot.config.js
 
-exports.engine = 'xblock'
+exports.engine = '@kibamaple/xblock'
 ```
 
 ### StartUp ###

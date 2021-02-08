@@ -4,7 +4,7 @@
 ## Install ##
 
 ``` shell
-npm install --save @brick/engine
+npm install --save brick-engine
 ```
 
 ## Usage ##
@@ -16,7 +16,7 @@ npm install --save @brick/engine
 // {cwd}/xboot.config.js
 // {cwd}/node_modules/{xxx engine}/xboot.config.js
 
-exports.engine = '@brick/engine'
+exports.engine = 'brick-engine'
 ```
 
 ### StartUp ###
@@ -104,7 +104,7 @@ module.exports = SimpleModel;
 使用`jsdoc`生成注释文档
 
 ``` shell
-git clone https://github.com/kiba-zhao/xblock.git
+git clone https://github.com/kiba-zhao/brick-engine.git
 cd xblock
 npm install
 npm run docs

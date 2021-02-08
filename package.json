@@ -1,5 +1,5 @@
 {
-  "name": "@brick/engine",
+  "name": "brick-engine",
   "version": "0.1.3",
   "description": "basic xboot engine",
   "main": "index.js",
@@ -25,9 +25,8 @@
     "url": "git+https://github.com/kiba-zhao/brick-engine.git"
   },
   "keywords": [
-    "xboot",
-    "xprovide",
     "brick",
+    "brick-engine",
     "engine"
   ],
   "author": "kiba.x.zhao",

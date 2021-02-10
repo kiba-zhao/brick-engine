@@ -1,7 +1,8 @@
-export function createInjector(loader: any): {
-    deps: {
-        id: string;
-        required: boolean;
-    }[];
-    factory: any;
-};
+import Injector = require("./lib/injector");
+/**
+ * 创建注射器
+ * @param {Array<Any>} args 注射器构造参数
+ * @return {Injector} 注射器实例
+ */
+export function createInjector(...args: Array<any>): Injector;
+export { Injector };

@@ -6,10 +6,12 @@
  */
 'use strict';
 
-const { createInjector } = require('.');
+const inject = require('.');
 
 module.exports = provider => {
+  provider.define('inject', [], inject);
   provider.require([ 'boot', 'config' ], (boot, config) => injectorFactory(provider, boot, config.inject));
+
 };
 
 function injectorFactory(provider, boot, configs) {
@@ -21,13 +23,7 @@ function injectorFactory(provider, boot, configs) {
   for (const id in configs) {
     const config = configs[id];
     const loader = boot.createBootLoader(config.pattern, boot.context, config.opts || {});
-    const injector = createInjector(loader);
-    provider.define(id, injector.deps.map(transform), injector.factory);
+    const injector = inject.createInjector(loader);
+    provider.define(id, injector.deps, injector.build.bind(injector));
   }
 }
-
-const OPT_SUFFIX = '?';
-function transform(dep) {
-  return dep.required ? dep.id : dep.id + OPT_SUFFIX;
-}
-

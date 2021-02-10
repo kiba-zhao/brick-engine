@@ -218,4 +218,5 @@ describe('simple', () => {
     const moduleB = moduleBFn.mock.calls[0][0];
     expect(moduleB).toEqual({});
   });
+
 });

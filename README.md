@@ -54,13 +54,15 @@ npx xboot
 exports.inject = {
   // 注入名称
   controller: { 
-    pattern: 'controllers/**/*.js',
+    patterns: 'controllers/**/*.js',
     // 请参考xboot中BootLoader的opts参数说明
     opts:{}
   },
-  service: { pattern: 'services/**/*.js' },
-  model: { pattern: 'models/**/*.js' },
-  helper: { pattern: 'helpers/**/*.js' },
+  service: { patterns: 'services/**/*.js' },
+  model: { patterns: 'models/**/*.js' },
+  helper: { patterns: 'helpers/**/*.js' },
+  // 仅仅注入依赖并初始化模型，但并不将初始化后对象使用provider.define定义到provider中.
+  init:{patterns:'init/**/*.js',type:'init'}
 };
 ```
 

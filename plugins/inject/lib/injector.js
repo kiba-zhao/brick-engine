@@ -132,7 +132,7 @@ function prepare(injector, loader, opts) {
     const module = parseModule(item, moduleOpts);
     if (!module) { continue; }
 
-    assert(opts.validate === undefined || opts.validate(true), `Injector Error: ${module.path} is invalid!!!`);
+    assert(opts.validate === undefined || opts.validate(module), `Injector Error: ${module.path} is invalid!!!`);
 
     for (const dep of module.deps) {
       if (cache[dep.id] === true) { continue; }

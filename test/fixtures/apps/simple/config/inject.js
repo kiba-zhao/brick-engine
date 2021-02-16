@@ -7,6 +7,8 @@
 'use strict';
 
 exports.inject = {
-  moduleA: { pattern: 'moduleA/**/*.js' },
-  moduleB: { pattern: 'moduleB/**/*.js' },
+  moduleA: { patterns: 'moduleA/**/*.js' },
+  moduleB: { patterns: 'moduleB/**/*.js' },
+  initA: { patterns: 'initA/**/*.js', type: 'init' },
+  initB: { patterns: 'initB/**/*.js', type: 'init' },
 };

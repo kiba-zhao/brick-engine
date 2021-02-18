@@ -61,8 +61,6 @@ exports.inject = {
   service: { patterns: 'services/**/*.js' },
   model: { patterns: 'models/**/*.js' },
   helper: { patterns: 'helpers/**/*.js' },
-  // 仅仅注入依赖并初始化模型，但并不将初始化后对象使用provider.define定义到provider中.
-  init:{patterns:'init/**/*.js',type:'init'}
 };
 ```
 

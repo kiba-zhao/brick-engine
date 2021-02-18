@@ -51,24 +51,12 @@ class Injector {
   }
 
   /**
-   * 初始化注入模块
-   * @param {Array<Any>} args 注入模块的依赖模块
-   */
-  init(...args) {
-    const modules = initModules(this, ...args);
-    let value = modules.next();
-    while (value.done === false) {
-      value = modules.next();
-    }
-  }
-
-  /**
    * 构建注入模型
    * @param {Array<any>} args 注入模块的依赖模块
    * @return {Object} 注入模型
    */
   build(...args) {
-    const modules = initModules(this, ...args);
+    const modules = this.create(...args);
     const model = {};
     for (const module of modules) {
       assert(module.name, `Injector Error:module ${module.path} miss inject name`);
@@ -76,45 +64,45 @@ class Injector {
     }
     return model;
   }
+
+
+  /**
+   * 创建模块
+   * @param {Array<any>} args 注入模块的依赖模块
+   */
+  * create(...args) {
+    const injector = this;
+    const ctx = {};
+    for (let i = 0; i < injector.deps.length; i++) {
+      if (args[i] === undefined) { continue; }
+      const key = injector.deps[i].id;
+      ctx[key] = args[i];
+    }
+
+    const modules = injector[MODULES];
+    for (const module of modules) {
+      const moduleArgs = [];
+      for (const dep of module.deps) {
+        assert(dep.required === false || ctx[dep.id] !== undefined, `Injector Error: module ${module.path} is pending`);
+        moduleArgs.push(ctx[dep.id]);
+      }
+
+      let model;
+      if (isClass(module.factory)) {
+        model = new module.factory(...moduleArgs);
+      } else if (isFunction(module.factory)) {
+        model = module.factory(...moduleArgs);
+      } else {
+        model = module.factory;
+      }
+      yield { ...module, model };
+
+    }
+
+  }
 }
 
 module.exports = Injector;
-
-/**
- * 初始化注入模块
- * @param {Injector} injector 注入器
- * @param {Array<any>} args 注入模块的依赖模块
- */
-function* initModules(injector, ...args) {
-  const ctx = {};
-  for (let i = 0; i < injector.deps.length; i++) {
-    if (args[i] === undefined) { continue; }
-    const key = injector.deps[i].id;
-    ctx[key] = args[i];
-  }
-
-  const modules = injector[MODULES];
-  for (const module of modules) {
-    const moduleArgs = [];
-    for (const dep of module.deps) {
-      assert(dep.required === false || ctx[dep.id] !== undefined, `Injector Error: module ${module.path} is pending`);
-      moduleArgs.push(ctx[dep.id]);
-    }
-
-    let model;
-    if (isClass(module.factory)) {
-      model = new module.factory(...moduleArgs);
-    } else if (isFunction(module.factory)) {
-      model = module.factory(...moduleArgs);
-    } else {
-      model = module.factory;
-    }
-    yield { ...module, model };
-
-  }
-
-}
-
 
 /**
  * 注射器准备函数

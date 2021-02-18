@@ -25,11 +25,9 @@ describe('simple', () => {
   let provider;
   const Provider = jest.fn();
   const context = {};
-  const initAFn = jest.fn();
 
   beforeAll(() => {
     jest.doMock('xprovide', () => ({ Provider }), { virtual: true });
-    jest.doMock(`${__dirname}/fixtures/apps/simple/initA/init_a.js`, () => (initAFn), { virtual: true });
     jest.resetModules();
   });
 
@@ -43,13 +41,11 @@ describe('simple', () => {
 
   afterEach(() => {
     Provider.mockReset();
-    initAFn.mockReset();
   });
 
 
   afterAll(() => {
     jest.dontMock('xprovide');
-    jest.dontMock(`${__dirname}/fixtures/apps/simple/initA/init_a.js`);
   });
 
   it('boot local', () => {
@@ -221,9 +217,6 @@ describe('simple', () => {
     expect(moduleBFn).toBeCalledTimes(1);
     const moduleB = moduleBFn.mock.calls[0][0];
     expect(moduleB).toEqual({});
-
-    expect(initAFn).toBeCalledTimes(1);
-    expect(initAFn).toBeCalledWith(env, config);
   });
 
 });

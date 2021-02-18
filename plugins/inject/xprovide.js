@@ -24,7 +24,6 @@ function injectorFactory(provider, boot, configs) {
     const config = configs[id];
     const loader = boot.createBootLoader(config.patterns, boot.context, config.opts || {});
     const injector = inject.createInjector(loader);
-    const type = config.type || 'module';
-    if (type === 'module') { provider.define(id, injector.deps, injector.build.bind(injector)); } else { provider.require(injector.deps, injector.init.bind(injector)); }
+    provider.define(id, injector.deps, injector.build.bind(injector));
   }
 }

@@ -21,16 +21,16 @@ declare class Injector {
      */
     get deps(): any[];
     /**
-     * 初始化注入模块
-     * @param {Array<Any>} args 注入模块的依赖模块
-     */
-    init(...args: Array<any>): void;
-    /**
      * 构建注入模型
      * @param {Array<any>} args 注入模块的依赖模块
      * @return {Object} 注入模型
      */
     build(...args: Array<any>): any;
+    /**
+     * 创建模块
+     * @param {Array<any>} args 注入模块的依赖模块
+     */
+    create(...args: Array<any>): Generator<any, void, unknown>;
 }
 declare namespace Injector {
     export { InjectorOpts };

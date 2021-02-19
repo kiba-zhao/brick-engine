@@ -3,6 +3,7 @@ export = Injector;
  * 提供器可选项
  * @typedef {Object} InjectorOpts
  * @property {Function} validate 是否缓存创建结果
+ * @property {Object} store 是否缓存创建结果
  */
 /**
  * 注射器
@@ -43,4 +44,8 @@ type InjectorOpts = {
      * 是否缓存创建结果
      */
     validate: Function;
+    /**
+     * 是否缓存创建结果
+     */
+    store: any;
 };

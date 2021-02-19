@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const { isFunction, isPlainObject } = require('lodash');
+const { isFunction, isPlainObject, isString } = require('lodash');
 const isClass = require('is-class');
 const assert = require('assert');
 const { parse } = require('comment-parser');
@@ -16,11 +16,13 @@ const path = require('path');
 const MODULES = Symbol('modules');
 const DEPENDENCIES = Symbol('dependencies');
 const MODULE_OPTS = Symbol('moduleOpts');
+const STORE = Symbol('store');
 
 /**
  * 提供器可选项
  * @typedef {Object} InjectorOpts
  * @property {Function} validate 是否缓存创建结果
+ * @property {Object} store 是否缓存创建结果
  */
 
 /**
@@ -37,6 +39,7 @@ class Injector {
 
     assert(isPlainObject(opts), 'Injector Error: wrong opts');
     assert(opts.validate === undefined || isFunction(opts.validate), 'Injector Error: wrong opts.validate');
+    assert(opts.store === undefined || isPlainObject(opts.store), 'Injector Error: wrong opts.validate');
 
     this[MODULE_OPTS] = { encoding: 'utf8' };
     prepare(this, loader, opts);
@@ -59,8 +62,9 @@ class Injector {
     const modules = this.create(...args);
     const model = {};
     for (const module of modules) {
-      assert(module.name, `Injector Error:module ${module.path} miss inject name`);
-      model[module.name] = module.model;
+      if (isString(module.name)) {
+        model[module.name] = module.model;
+      }
     }
     return model;
   }
@@ -71,8 +75,10 @@ class Injector {
    * @param {Array<any>} args 注入模块的依赖模块
    */
   * create(...args) {
+
     const injector = this;
-    const ctx = {};
+    const store = injector[STORE];
+    const ctx = { ...store };
     for (let i = 0; i < injector.deps.length; i++) {
       if (args[i] === undefined) { continue; }
       const key = injector.deps[i].id;
@@ -115,6 +121,7 @@ function prepare(injector, loader, opts) {
   const modules = [];
   const deps = [];
   const cache = {};
+  const store = opts.store || {};
   for (const item of loader) {
 
     const module = parseModule(item, moduleOpts);
@@ -123,7 +130,10 @@ function prepare(injector, loader, opts) {
     assert(opts.validate === undefined || opts.validate(module), `Injector Error: ${module.path} is invalid!!!`);
 
     for (const dep of module.deps) {
-      if (cache[dep.id] === true) { continue; }
+      const id = dep.id;
+      const required = dep.required;
+      if (cache[id] === true || cache[id] === required || store.hasOwnProperty(id)) { continue; }
+      cache[id] = required;
       deps.push(dep);
     }
     modules.push(module);
@@ -131,6 +141,7 @@ function prepare(injector, loader, opts) {
 
   injector[MODULES] = modules;
   injector[DEPENDENCIES] = deps;
+  injector[STORE] = store;
 
 }
 

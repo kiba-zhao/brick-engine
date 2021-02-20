@@ -22,7 +22,7 @@ function createConfig(entries, env, ctx) {
   let config = {};
   for (const entry of entries) {
     const name = path.basename(entry.path, '.js');
-    const content = isFunction(entry.content) ? entry.content(ctx) : entry.content;
+    const content = isFunction(entry.module) ? entry.module(ctx) : entry.module;
     if (name === env) {
       config = defaultsDeep(content, config);
       continue;

@@ -7,15 +7,12 @@
 'use strict';
 
 const { isFunction, isPlainObject, isString } = require('lodash');
+const { DEPS, INJECT } = require('./constants');
 const isClass = require('is-class');
 const assert = require('assert');
-const { parse } = require('comment-parser');
-const fs = require('fs');
-const path = require('path');
 
 const MODULES = Symbol('modules');
 const DEPENDENCIES = Symbol('dependencies');
-const MODULE_OPTS = Symbol('moduleOpts');
 const STORE = Symbol('store');
 
 /**
@@ -41,7 +38,6 @@ class Injector {
     assert(opts.validate === undefined || isFunction(opts.validate), 'Injector Error: wrong opts.validate');
     assert(opts.store === undefined || isPlainObject(opts.store), 'Injector Error: wrong opts.validate');
 
-    this[MODULE_OPTS] = { encoding: 'utf8' };
     prepare(this, loader, opts);
   }
 
@@ -117,17 +113,14 @@ module.exports = Injector;
  * @param {InjectorOpts} opts 注射器可选项
  */
 function prepare(injector, loader, opts) {
-  const moduleOpts = injector[MODULE_OPTS];
   const modules = [];
   const deps = [];
   const cache = {};
   const store = opts.store || {};
   for (const item of loader) {
 
-    const module = parseModule(item, moduleOpts);
-    if (!module) { continue; }
-
-    assert(opts.validate === undefined || opts.validate(module), `Injector Error: ${module.path} is invalid!!!`);
+    const module = parse(item);
+    assert(opts.validate === undefined || opts.validate(item.module), `Injector Error: ${item.filePath} is invalid!!!`);
 
     for (const dep of module.deps) {
       const id = dep.id;
@@ -145,31 +138,13 @@ function prepare(injector, loader, opts) {
 
 }
 
-const INJECT_TAG = 'inject';
-const DEPENDENCY_TAG = 'dependency';
 /**
  * 分析转换模块函数
  * @param {Object} item 模块项
- * @param {Object} opts 模块文件读取可选项目
  * @return {Object} 注入模块信息
  */
-function parseModule(item, opts) {
-
-  let name;
-  const deps = [];
-  const modulePath = path.join(item.cwd, item.path);
-  const content = fs.readFileSync(modulePath, opts);
-  const ast = parse(content);
-  for (const block of ast) {
-    for (const tag of block.tags) {
-      if (tag.tag === INJECT_TAG) {
-        name = name || tag.name;
-      } else if (tag.tag === DEPENDENCY_TAG) {
-        deps.push({ id: tag.name, required: !tag.optional });
-      }
-    }
-  }
-
-  return { name, deps, factory: item.content, path: modulePath };
+function parse(item) {
+  const module = item.module;
+  return { name: module[INJECT], deps: module[DEPS] || [], factory: module };
 
 }

@@ -7,8 +7,10 @@
 'use strict';
 
 const Injector = require('./lib/injector');
+const { inject } = require('./lib/utils');
 
 exports.Injector = Injector;
+exports.inject = inject;
 
 /**
  * 创建注射器

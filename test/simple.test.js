@@ -210,7 +210,10 @@ describe('simple', () => {
     expect(moduleA.modelA.constructor.name).toBe(MODEL_A_CLASS.name);
     expect(moduleA.modelA.env).toEqual(env);
     expect(moduleA.modelA.getConfig()).toEqual(config);
-    expect(moduleA.modelB).toEqual(MODEL_B);
+    const keys = Object.keys(MODEL_B);
+    for (const key of keys) {
+      expect(moduleA.modelB[key]).toEqual(MODEL_B[key]);
+    }
     expect(moduleA.modelC.env).toEqual(env);
     expect(moduleA.modelC.getConfig()).toEqual(config);
 

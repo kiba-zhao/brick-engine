@@ -5,11 +5,9 @@
  * @license MIT
  */
 'use strict';
-/**
- * @inject modelA 注入模型名称
- * @dependency env 依赖环境变量
- * @dependency config 依赖配置文件
- */
+
+const { inject } = require('../../../../../');
+
 class ModelA {
   constructor(env, config) {
     this._env = env;
@@ -27,3 +25,6 @@ class ModelA {
 }
 
 module.exports = ModelA;
+
+inject(ModelA, [ 'env', 'config' ], 'modelA');
+

@@ -6,11 +6,16 @@
  */
 'use strict';
 
-/**
- * @inject modelB 注入模型名称
- */
-exports.string = 'model_b';
+const { inject } = require('../../../../../../');
 
-exports.number = 123;
+const _exports = {};
 
-exports.object = { a: 1, b: '2', c: true };
+_exports.string = 'model_b';
+
+_exports.number = 123;
+
+_exports.object = { a: 1, b: '2', c: true };
+
+module.exports = _exports;
+
+inject(module.exports, [], 'modelB');

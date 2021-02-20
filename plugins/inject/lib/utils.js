@@ -21,6 +21,7 @@ function inject(target, deps, name) {
   assert(target !== null && target !== undefined, 'inject Error: wrong target');
   assert(isArray(_deps) && _deps.every(isDep), 'inject Error: wrong deps');
   assert(name === undefined || isString(name), 'inject Error: wrong name');
+  assert(target[DEPS] === undefined, 'inject Error: duplicate');
 
   target[DEPS] = _deps.map(parseDep);
   target[INJECT] = name;

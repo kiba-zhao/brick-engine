@@ -7,7 +7,8 @@
 'use strict';
 
 const path = require('path');
-const { isFunction, defaultsDeep } = require('lodash');
+const { isFunction } = require('lodash');
+const merge = require('deepmerge');
 
 /**
  * 创建config对象函数
@@ -21,16 +22,19 @@ function createConfig(entries, env, ctx) {
   let defaultConfig = {};
   let config = {};
   for (const entry of entries) {
-    const name = path.basename(entry.path, '.js');
-    const content = isFunction(entry.module) ? entry.module(ctx) : entry.module;
+    const { plugin, path: filepath, module } = entry;
+    const name = path.basename(filepath, '.js');
+    const content = isFunction(module) ? module(ctx) : module;
+
     if (name === env) {
-      config = defaultsDeep(content, config);
+      config = merge.all(plugin ? [ content, config ] : [ config, content ]);
       continue;
     }
-    defaultConfig = defaultsDeep(content, defaultConfig);
+    defaultConfig = merge.all(plugin ? [ content, defaultConfig ] : [ defaultConfig, content ]);
+
   }
 
-  config = defaultsDeep(config, defaultConfig);
+  config = merge(defaultConfig, config);
   return config;
 
 }

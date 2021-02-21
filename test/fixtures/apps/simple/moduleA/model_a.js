@@ -26,5 +26,5 @@ class ModelA {
 
 module.exports = ModelA;
 
-inject(ModelA, [ 'env', 'config' ], 'modelA');
+inject(ModelA, [ 'env', 'config?' ], 'modelA');
 

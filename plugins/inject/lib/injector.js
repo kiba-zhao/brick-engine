@@ -100,7 +100,9 @@ class Injector {
       } else {
         model = module.factory;
       }
-      model = init(model, ctx, module);
+      if (model !== undefined && model !== null) {
+        model = init(model, ctx, module);
+      }
       yield { ...module, model };
 
     }

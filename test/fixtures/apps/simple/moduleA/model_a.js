@@ -27,5 +27,5 @@ class ModelA {
 module.exports = ModelA;
 
 inject(ModelA, [ 'env', 'config?' ], 'modelA');
-provide(ModelA, 'cfg', { id: 'config' });
-provide(ModelA, 'config', 'config');
+provide(ModelA, 'cfg', { id: 'config', transform: _ => _ });
+ModelA.addins = { config: 'config' };

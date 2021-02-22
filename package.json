@@ -52,6 +52,7 @@
     "deepmerge": "^4.2.2",
     "is-class": "0.0.9",
     "lodash": "^4.17.20",
+    "log4js": "^6.3.0",
     "xprovide": "^0.4.0"
   },
   "husky": {

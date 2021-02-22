@@ -8,7 +8,16 @@
 
 const assert = require('assert');
 const { DEPS, INJECT, PROVIDE } = require('./constants');
-const { isSymbol, isString, isArray, isBoolean } = require('lodash');
+const { isSymbol, isString, isArray, isBoolean, isFunction } = require('lodash');
+
+
+/**
+ * 依赖对象描述
+ * @typedef {Object} DepRefer
+ * @property {boolean} required 是否必要
+ * @property {string} id 唯一标识
+ * @property {Function} transform 依赖模块转换
+ */
 
 /**
  * 注入帮助函数
@@ -85,5 +94,5 @@ function isDep(dep) {
   } else if (dep === null || dep === undefined) {
     return false;
   }
-  return isString(dep.id) && (isBoolean(dep.required) || dep.required === undefined);
+  return isString(dep.id) && (isBoolean(dep.required) || dep.required === undefined) && (isFunction(dep.transform) || dep.required === undefined);
 }

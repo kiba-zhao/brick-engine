@@ -89,7 +89,7 @@ class Injector {
       const moduleArgs = [];
       for (const dep of module.args) {
         assert(dep.required === false || ctx[dep.id] !== undefined, `Injector Error: module ${module.path} is pending`);
-        moduleArgs.push(ctx[dep.id]);
+        moduleArgs.push(dep.transform ? dep.transform(ctx[dep.id]) : ctx[dep.id]);
       }
 
       let model;
@@ -185,7 +185,7 @@ function init(target, ctx, module) {
     const dep = properties[key];
     assert(dep.required === false || ctx[dep.id] !== undefined, `Injector Error: module ${module.path} is pending`);
     Object.defineProperty(target, key, {
-      value: ctx[dep.id],
+      value: dep.transform ? dep.transform(ctx[dep.id]) : ctx[dep.id],
       writable: false,
     });
   }

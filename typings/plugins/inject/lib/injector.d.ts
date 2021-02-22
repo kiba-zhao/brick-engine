@@ -4,7 +4,7 @@ export = Injector;
  * @typedef {Object} InjectorOpts
  * @property {Function} validate 是否缓存创建结果
  * @property {Object} store 是否缓存创建结果
- * @property {Array} addins 附加注入
+ * @property {Array<Function>} addins 注入属性提取函数(附加)
  */
 /**
  * 注射器
@@ -50,7 +50,7 @@ type InjectorOpts = {
      */
     store: any;
     /**
-     * 附加注入
+     * 注入属性提取函数(附加)
      */
-    addins: any[];
+    addins: Array<Function>;
 };

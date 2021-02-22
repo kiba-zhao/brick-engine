@@ -7,9 +7,6 @@
 'use strict';
 
 exports.inject = {
-  addins: [ 'addins' ],
-  modules: {
-    moduleA: { patterns: 'moduleA/**/*.js' },
-    moduleB: { patterns: 'moduleB/**/*.js' },
-  },
+  moduleA: { patterns: 'moduleA/**/*.js' },
+  moduleB: { patterns: 'moduleB/**/*.js' },
 };

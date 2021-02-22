@@ -21,7 +21,7 @@ const STORE = Symbol('store');
  * @typedef {Object} InjectorOpts
  * @property {Function} validate 是否缓存创建结果
  * @property {Object} store 是否缓存创建结果
- * @property {Array} addins 附加注入
+ * @property {Array<Function>} addins 注入属性提取函数(附加)
  */
 
 /**
@@ -148,7 +148,7 @@ function prepare(injector, loader, opts) {
 /**
  * 分析转换模块函数
  * @param {Object} item 模块项
- * @param {Array<String | Symbol>} addins 附加属性依赖
+ * @param {Array<Function>} addins 附加属性依赖
  * @return {Object} 注入模块信息
  */
 function parse(item, addins) {
@@ -158,8 +158,9 @@ function parse(item, addins) {
 
   let props = module[PROVIDE] || {};
   for (const addin of addins) {
-    if (!module[addin]) { continue; }
-    props = { ...module[addin], ...props };
+    const addinProps = addin(module);
+    if (!addinProps) { continue; }
+    props = { ...addinProps, ...props };
   }
 
   const deps = [];

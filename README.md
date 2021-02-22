@@ -52,11 +52,6 @@ npx xboot
 // {cwd}/node_modules/config/*.js
 
 exports.inject = {
-
-  // 附加注入依赖集合
-  addins:['log4js'],
-  // 注入模块集合
-  modules:{
     // 注入名称
     service: { 
         patterns: 'services/**/*.js',
@@ -65,7 +60,6 @@ exports.inject = {
     },
     model: { patterns: 'models/**/*.js' },
     helper: { patterns: 'helpers/**/*.js' },
-  }
 };
 ```
 
@@ -103,6 +97,11 @@ inject(SimpleModel, [ 'env', 'config?' ], 'modelA')
 //           Object.defineProperty(instance,'cfg',{value:config,writable: false});
 provide(SimpleModel, 'cfg', 'config?');
 ```
+
+#### 函数说明 ####
+
+  * **inject**: 定义构造模块所需要使用的依赖模块，以及构造模块命名
+  * **provide**: 往模块指定属性，写入依赖模块
 
 ## Documentations ##
 使用`jsdoc`生成注释文档

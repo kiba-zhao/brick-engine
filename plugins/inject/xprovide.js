@@ -14,16 +14,17 @@ module.exports = provider => {
 
 };
 
-function injectorFactory(provider, boot, configs) {
+function injectorFactory(provider, boot, config) {
 
-  if (!configs) {
+  if (!config || !config.modules) {
     return;
   }
 
-  for (const id in configs) {
-    const config = configs[id];
-    const loader = boot.createBootLoader(config.patterns, boot.context, config.opts || {});
-    const injector = inject.createInjector(loader);
+  const modules = config.modules;
+  for (const id in modules) {
+    const module = modules[id];
+    const loader = boot.createBootLoader(module.patterns, boot.context, module.opts || {});
+    const injector = inject.createInjector(loader, { addins: config.addins });
     provider.define(id, injector.deps, injector.build.bind(injector));
   }
 }

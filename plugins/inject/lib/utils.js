@@ -7,8 +7,8 @@
 'use strict';
 
 const assert = require('assert');
-const { DEPS, INJECT } = require('./constants');
-const { isString, isArray, isBoolean } = require('lodash');
+const { DEPS, INJECT, PROVIDE } = require('./constants');
+const { isSymbol, isString, isArray, isBoolean } = require('lodash');
 
 /**
  * 注入帮助函数
@@ -29,6 +29,30 @@ function inject(target, deps, name) {
   return target;
 }
 
+exports.inject = inject;
+
+/**
+ * 提供函数
+ * @param {any} target 提供对象
+ * @param {String} property 提供属性名
+ * @param {String | DepRefer} dep 依赖模块
+ */
+function provide(target, property, dep) {
+  assert(target !== null && target !== undefined, 'provide Error: wrong target');
+  assert(isString(property) || isSymbol(property), 'provide Error: wrong property');
+  assert(isDep(dep), 'provide Error: wrong dep');
+
+  if (target[PROVIDE] === undefined) {
+    target[PROVIDE] = {};
+  }
+  const map = target[PROVIDE];
+  assert(map[property] === undefined, 'inject Error: duplicate');
+
+  map[property] = dep;
+}
+
+exports.provide = provide;
+
 const OPTIONAL_KEY = '?';
 /**
  * 解析依赖函数
@@ -48,6 +72,8 @@ function parseDep(dep) {
   return { id, required };
 }
 
+exports.parseDep = parseDep;
+
 /**
  * 判断是否为为依赖信息函数
  * @param {string | DepRefer} dep 依赖信息
@@ -61,6 +87,3 @@ function isDep(dep) {
   }
   return isString(dep.id) && (isBoolean(dep.required) || dep.required === undefined);
 }
-
-
-exports.inject = inject;

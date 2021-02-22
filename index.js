@@ -6,6 +6,7 @@
  */
 'use strict';
 
-const { inject } = require('./plugins/inject');
+const { inject, provide } = require('./plugins/inject');
 
 exports.inject = inject;
+exports.provide = provide;

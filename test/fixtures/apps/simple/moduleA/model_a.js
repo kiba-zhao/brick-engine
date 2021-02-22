@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const { inject } = require('../../../../../');
+const { inject, provide } = require('../../../../../');
 
 class ModelA {
   constructor(env, config) {
@@ -27,4 +27,5 @@ class ModelA {
 module.exports = ModelA;
 
 inject(ModelA, [ 'env', 'config?' ], 'modelA');
-
+provide(ModelA, 'cfg', { id: 'config' });
+provide(ModelA, 'config', 'config');

@@ -6,8 +6,9 @@
  */
 'use strict';
 
-const { isFunction, isPlainObject, isString } = require('lodash');
-const { DEPS, INJECT } = require('./constants');
+const { isFunction, isPlainObject, isString, isArray } = require('lodash');
+const { DEPS, INJECT, PROVIDE } = require('./constants');
+const { parseDep } = require('./utils');
 const isClass = require('is-class');
 const assert = require('assert');
 
@@ -20,6 +21,7 @@ const STORE = Symbol('store');
  * @typedef {Object} InjectorOpts
  * @property {Function} validate 是否缓存创建结果
  * @property {Object} store 是否缓存创建结果
+ * @property {Array} addins 附加注入
  */
 
 /**
@@ -36,7 +38,8 @@ class Injector {
 
     assert(isPlainObject(opts), 'Injector Error: wrong opts');
     assert(opts.validate === undefined || isFunction(opts.validate), 'Injector Error: wrong opts.validate');
-    assert(opts.store === undefined || isPlainObject(opts.store), 'Injector Error: wrong opts.validate');
+    assert(opts.store === undefined || isPlainObject(opts.store), 'Injector Error: wrong opts.store');
+    assert(opts.addins === undefined || isArray(opts.addins), 'Injector Error: wrong opts.addins');
 
     prepare(this, loader, opts);
   }
@@ -84,7 +87,7 @@ class Injector {
     const modules = injector[MODULES];
     for (const module of modules) {
       const moduleArgs = [];
-      for (const dep of module.deps) {
+      for (const dep of module.args) {
         assert(dep.required === false || ctx[dep.id] !== undefined, `Injector Error: module ${module.path} is pending`);
         moduleArgs.push(ctx[dep.id]);
       }
@@ -97,6 +100,7 @@ class Injector {
       } else {
         model = module.factory;
       }
+      model = init(model, ctx, module);
       yield { ...module, model };
 
     }
@@ -117,18 +121,21 @@ function prepare(injector, loader, opts) {
   const deps = [];
   const cache = {};
   const store = opts.store || {};
+  const addins = opts.addins || [];
   for (const item of loader) {
 
-    const module = parse(item);
+    const module = parse(item, addins);
     assert(opts.validate === undefined || opts.validate(item.module), `Injector Error: ${item.filePath} is invalid!!!`);
 
-    for (const dep of module.deps) {
+    const _deps = [ ...module.deps, ...module.args ];
+    for (const dep of _deps) {
       const id = dep.id;
       const required = dep.required;
       if (cache[id] === true || cache[id] === required || store.hasOwnProperty(id)) { continue; }
       cache[id] = required;
       deps.push(dep);
     }
+
     modules.push(module);
   }
 
@@ -141,10 +148,47 @@ function prepare(injector, loader, opts) {
 /**
  * 分析转换模块函数
  * @param {Object} item 模块项
+ * @param {Array<String | Symbol>} addins 附加属性依赖
  * @return {Object} 注入模块信息
  */
-function parse(item) {
+function parse(item, addins) {
   const module = item.module;
-  return { name: module[INJECT], deps: module[DEPS] || [], factory: module };
+  const args = module[DEPS] || [];
+  const properties = {};
 
+  let props = module[PROVIDE] || {};
+  for (const addin of addins) {
+    if (!module[addin]) { continue; }
+    props = { ...module[addin], ...props };
+  }
+
+  const deps = [];
+  const keys = Reflect.ownKeys(props);
+  for (const key of keys) {
+    const dep = parseDep(props[key]);
+    deps.push(dep);
+    properties[key] = dep;
+  }
+  return { name: module[INJECT], deps, keys, args, properties, factory: module };
 }
+
+/**
+ * 初始化模型
+ * @param {any} target 模型对象
+ * @param {Object} ctx 依赖模块上下文
+ * @param {Object} module 注入模块信息
+ * @return {any} target
+ */
+function init(target, ctx, module) {
+  const { keys, properties } = module;
+  for (const key of keys) {
+    const dep = properties[key];
+    assert(dep.required === false || ctx[dep.id] !== undefined, `Injector Error: module ${module.path} is pending`);
+    Object.defineProperty(target, key, {
+      value: ctx[dep.id],
+      writable: false,
+    });
+  }
+  return target;
+}
+

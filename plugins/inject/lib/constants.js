@@ -9,3 +9,4 @@
 exports.DEPS = Symbol('DEPS');
 
 exports.INJECT = Symbol('INJECT');
+exports.PROVIDE = Symbol('PROVIDE');

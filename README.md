@@ -52,15 +52,20 @@ npx xboot
 // {cwd}/node_modules/config/*.js
 
 exports.inject = {
-  // 注入名称
-  controller: { 
-    patterns: 'controllers/**/*.js',
-    // 请参考xboot中BootLoader的opts参数说明
-    opts:{}
-  },
-  service: { patterns: 'services/**/*.js' },
-  model: { patterns: 'models/**/*.js' },
-  helper: { patterns: 'helpers/**/*.js' },
+
+  // 附加注入依赖集合
+  addins:['log4js'],
+  // 注入模块集合
+  modules:{
+    // 注入名称
+    service: { 
+        patterns: 'services/**/*.js',
+        // 请参考xboot中BootLoader的opts参数说明
+        opts:{}
+    },
+    model: { patterns: 'models/**/*.js' },
+    helper: { patterns: 'helpers/**/*.js' },
+  }
 };
 ```
 
@@ -70,11 +75,7 @@ exports.inject = {
 ``` javascript
 // {cwd}/models/simple.js
 
-/**
- * @inject modelA 模型中的属性名
- * @dependency env 依赖环境变量
- * @dependency config 依赖配置文件
- */
+const {inject,provide} = require('brick-engine');
  
  class SimpleModel {
   constructor(env, config) {
@@ -94,11 +95,14 @@ exports.inject = {
 
 module.exports = SimpleModel;
 
+// 定义生成类实例时候，作为构造参数使用的依赖模块
+// 即同等于：　new SimpleModel(env,config);
+inject(SimpleModel, [ 'env', 'config?' ], 'modelA')
+// 将依赖模块直接定义到类的实例中
+// 即同等于：　const instance = new SimpleModel(...)
+//           Object.defineProperty(instance,'cfg',{value:config,writable: false});
+provide(SimpleModel, 'cfg', 'config?');
 ```
-
-**@inject** : 模型中的属性名
-**@dependency** : 依赖的其他模块
-**@dependency [xxx]** : 依赖的其他可选模块
 
 ## Documentations ##
 使用`jsdoc`生成注释文档

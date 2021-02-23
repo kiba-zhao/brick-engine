@@ -172,7 +172,7 @@ function parse(item, addins) {
     deps.push(dep);
     properties[key] = dep;
   }
-  return { name: module[INJECT], deps, keys, args, properties, factory: module };
+  return { name: module[INJECT], deps, keys, args, properties, factory: module, plugin: item.plugin };
 }
 
 /**

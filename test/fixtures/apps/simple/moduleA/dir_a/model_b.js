@@ -18,4 +18,4 @@ _exports.object = { a: 1, b: '2', c: true };
 
 module.exports = _exports;
 
-inject(module.exports, [], 'modelB');
+inject(module.exports, { name: 'modelB' });

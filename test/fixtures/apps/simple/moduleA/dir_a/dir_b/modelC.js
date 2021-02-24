@@ -15,4 +15,4 @@ module.exports = (env, config) => {
 
 };
 
-inject(module.exports, [ 'env', 'config' ], 'modelC');
+inject(module.exports, { deps: [ 'env', 'config' ], name: 'modelC' });

@@ -91,11 +91,11 @@ module.exports = SimpleModel;
 
 // 定义生成类实例时候，作为构造参数使用的依赖模块
 // 即同等于：　new SimpleModel(env,config);
-inject(SimpleModel, [ 'env', 'config?' ], 'modelA')
+inject(SimpleModel,{ deps:[ 'env', 'config?' ], name:'modelA'})
 // 将依赖模块直接定义到类的实例中
 // 即同等于：　const instance = new SimpleModel(...)
 //           Object.defineProperty(instance,'cfg',{value:config,writable: false});
-provide(SimpleModel, 'cfg', 'config?');
+provide(SimpleModel, {property:'cfg', dep:'config?'});
 ```
 
 #### 函数说明 ####

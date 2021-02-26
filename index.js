@@ -6,7 +6,13 @@
  */
 'use strict';
 
-const { inject, provide } = require('./plugins/inject');
+const { ENGINE } = require('./lib/constants');
+const Engine = require('./lib/engine');
+const { inject, provide } = require('./lib/inject');
+
+exports.ENGINE = ENGINE;
+
+exports.Engine = Engine;
 
 exports.inject = inject;
 exports.provide = provide;

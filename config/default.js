@@ -9,5 +9,5 @@
 const { ENGINE } = require('..');
 
 exports[ENGINE] = {
-  app: 'app.js'
+  app: 'app.js',
 };

@@ -7,7 +7,7 @@
  * @license MIT
  */
 
-const {Engine} = require('..');
+const Engine = require('../lib/engine');
 
 const engine = new Engine();
 engine.start();

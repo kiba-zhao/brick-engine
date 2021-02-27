@@ -16,11 +16,10 @@
   "files": [
     "typings",
     "package.json",
-    "lib",
     "bin",
-    "config",    
-    "app.js",    
+    "lib",
     "boot.js",
+    "app.js",
     "index.js"
   ],
   "repository": {
@@ -54,7 +53,7 @@
     "deepmerge": "^4.2.2",
     "is-class": "0.0.9",
     "lodash": "^4.17.20",
-    "xboot": "^0.5.0"
+    "xboot": "^0.5.3"
   },
   "husky": {
     "hooks": {
@@ -66,7 +65,9 @@
       "^@/(.*)$": "<rootDir>/$1"
     },
     "collectCoverageFrom": [
-      "bin/**/*.js","lib/**/*.js","*.js"
+      "bin/**/*.js",
+      "lib/**/*.js",
+      "*.js"
     ]
   }
 }

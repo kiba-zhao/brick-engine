@@ -6,9 +6,10 @@
  */
 'use strict';
 
-const { ENGINE, inject } = require('.');
+const { ENGINE } = require('./lib/constants');
+const { inject } = require('./lib/inject');
 
-module.exports = (engine) => {
+module.exports = engine => {
   const config = engine.config[ENGINE];
   const modules = config.modules;
   if (!modules) {
@@ -16,7 +17,7 @@ module.exports = (engine) => {
   }
 
   const keys = Reflect.ownKeys(modules);
-  for (let key of keys) {
+  for (const key of keys) {
     const { patterns, opts } = modules[key];
     engine.build(patterns, opts, install.bind(engine, key));
   }
@@ -31,7 +32,7 @@ function install(engine, name, targets) {
 
 function moduleFactory(targets) {
   const module = {};
-  for (let target of targets) {
+  for (const target of targets) {
     if (target.name) {
       module[target.name] = target.model;
     }

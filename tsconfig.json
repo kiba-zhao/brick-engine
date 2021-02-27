@@ -1,6 +1,6 @@
 {
-  "include": ["**/*.js"],
-  "exclude":["test","node_modules","index.js"],
+  "include": ["bin/*.js","lib/**/*","index.js","app.js"],
+  "exclude":["node_modules/**/*"],
   "compilerOptions": {
     "allowJs": true,
     "declaration": true,

@@ -6,7 +6,9 @@
  */
 'use strict';
 
-exports.inject = {
+const { ENGINE } = require('../../../../..');
+
+exports[ENGINE] = {
   moduleA: { patterns: 'moduleA/**/*.js' },
   moduleB: { patterns: 'moduleB/**/*.js' },
 };

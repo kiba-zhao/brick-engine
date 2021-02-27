@@ -3,8 +3,8 @@
   "recurseDepth": 10,
   "sourceType": "module",
   "source": {
-    "include": ["*.js","plugins"],
-    "exclude": ["plugins/*/test"],
+    "include": ["**/*.js"],
+    "exclude":["test","node_modules"],
     "includePattern": ".+\\.js$",
     "excludePattern": "(^|\\/|\\\\)_"
   },

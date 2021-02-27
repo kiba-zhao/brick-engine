@@ -10,28 +10,31 @@ const { ENGINE, inject } = require('.');
 
 module.exports = (engine) => {
   const config = engine.config[ENGINE];
-  const modelsConfig = config.models;
-  if (!modelsConfig) {
+  const modules = config.modules;
+  if (!modules) {
     return;
   }
 
-  const keys = Reflect.ownKeys(modelsConfig);
+  const keys = Reflect.ownKeys(modules);
   for (let key of keys) {
-    const { patterns, opts } = modelsConfig[key];
+    const { patterns, opts } = modules[key];
     engine.build(patterns, opts, install.bind(engine, key));
   }
 };
 
-function install(engine, id, error, targets) {
-  if (error) {
-    throw error;
-  }
-  const models = {};
+function install(engine, name, targets) {
+  const factory = moduleFactory.bind(this, targets);
+  inject(factory, { name });
+  engine.install(factory);
+}
+
+
+function moduleFactory(targets) {
+  const module = {};
   for (let target of targets) {
     if (target.name) {
-      models[target.name] = target.model;
+      module[target.name] = target.model;
     }
   }
-  inject(models, { name: id });
-  engine.install(models);
+  return module;
 }

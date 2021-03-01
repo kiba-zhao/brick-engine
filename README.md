@@ -240,7 +240,7 @@ engine加载配置文件，根据env.BRICK_CONFIG合并后的配置内容对象.
     * opts.dep.transform: 依赖模块转换函数.
 
 
-#### Model Example####
+#### Model Example ####
 在模型相关的源码文件中，需要定义该文件模块依赖的上下文模块（比如各种db client模块,redis client模块以及http client模块等），以及该文件模块在模型中对应的属性名称.
 
 ``` javascript

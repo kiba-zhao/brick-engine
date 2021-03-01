@@ -7,30 +7,30 @@ declare class Engine {
     constructor(opts?: any);
     /**
      * 构造可选参数
-     * @returns {Object}
+     * @return {Object}
      */
     get options(): any;
     /**
      * 环境变量
-     * @returns {Object}
+     * @return {Object}
      */
     get env(): any;
     /**
      * 配置文件内容
-     * @returns {Object}
+     * @return {Object}
      */
     get config(): any;
     /**
-     * 安装模块函数,将模块生成交由引擎控制
+     * 安装模块方法,将模块生成交由引擎控制
      * @param {any} module 模块的构建方法
      * @param {Boolean} silent 静默处理:设置忽略未命名模块
-     * @returns {Boolean} 返回安装结果
+     * @return {Boolean} 返回安装结果
      */
     install(module: any, silent?: boolean): boolean;
     /**
      * 模型化目标
      * @typedef {Object} Target
-     * @property {any} module 模块构造
+     * @property {any} module 模块构造函数,或模块对象(包含inject函数定义的对象)
      * @property {String} name 模块命名
      * @property {any} model 模块实例对象
      */
@@ -50,7 +50,7 @@ declare class Engine {
      */
     model(target: {
         /**
-         * 模块构造
+         * 模块构造函数,或模块对象(包含inject函数定义的对象)
          */
         module: any;
         /**
@@ -66,7 +66,7 @@ declare class Engine {
      * 加载文件模块方法
      * @param {String | Array<String>} patterns 匹配文件规则
      * @param {Object} opts BootLoader可选参数
-     * @returns {Array<any>} 匹配的文件模块
+     * @return {Array<any>} 匹配的文件模块
      */
     load(patterns: string | Array<string>, opts?: any): Array<any>;
     /**
@@ -75,7 +75,7 @@ declare class Engine {
      * @param {Object} opts BootLoader可选参数
      * @param {Function} success 成功回调函数
      * @param {Function} fatal 失败回调函数
-     * @returns {}
+     * @return {}
      */
     build(patterns: string | Array<string>, opts: any, success: Function, fatal: Function): any;
     /**

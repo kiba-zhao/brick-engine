@@ -1,5 +1,5 @@
 # brick-engine #
-基于依赖注入模式([xprovide](https://github.com/kiba-zhao/xprovide))的基础工具engine．提供环境变量,配置文件内容以及功能模型注入插件．作为搭建应用的最基本engine使用．
+应用的基础工具包．包含环境变量定义,加载配置文件,加载模块文件,以及模块模型化等应用常用基本功能．使用依赖注入的方式生成和管理模块对象．
 
 ## Install ##
 
@@ -8,13 +8,16 @@ npm install --save brick-engine
 ```
 
 ## Usage ##
-可以通过[xboot](https://github.com/kiba-zhao/xboot)加载使用项目.
+使用bin/brick-engine来启动应用和引擎.
 
 ### Configuration ###
+brick-engine使用加载引导库来加载项目模块文件．引导设置文件详情,请参考[xboot](https://github.com/kiba-zhao/xboot)
+
+> PS: brick-engine加载的默认设置文件问boot.js,而不是xboot默认使用的xboot.config.js
 
 ``` javascript
-// {cwd}/xboot.config.js
-// {cwd}/node_modules/{xxx engine}/xboot.config.js
+// {cwd}/boot.js
+// {cwd}/node_modules/{xxx engine}/boot.js
 
 exports.engine = 'brick-engine'
 ```
@@ -22,48 +25,203 @@ exports.engine = 'brick-engine'
 ### StartUp ###
 
 ``` shell
-npm install xboot
-npx xboot
+npm install brick-engine
+npx brick-engine
 ```
 
-## Plugins ##
-  * [环境变量插件](#Env)
-  * [配置插件](#Config)
-  * [模型注入插件](#Inject)
+### App Entry ###
+在brick-engine初始化时，将会加载调用默认的应用入口文件app.js．
 
-### Env ###
-将环境变量注入当前应用的[xprovide](https://github.com/kiba-zhao/xprovide)中．根据NODE_ENV设置默认XBLOCK_CONFIG环境变量.
-  * 未设置XBLOCK_CONFIG,且NODE_ENV为production : XBLOCK_CONFIG为prod
-  * 未设置XBLOCK_CONFIG,且NODE_ENV不production : XBLOCK_CONFIG为local
+``` javascript
+// {cwd}/app.js
+// {cwd}/node_modules/{xxx engine}/app.js  boot.js中设置的engine包
+// {cwd}/node_modules/{xxx plugin}/app.js  plugin.js中设置的package包
 
-### Config ###
-根据Env插件注入的XBLOCK_CONFIG,加载合并配置文件`config/{env.XBLOCK_CONFIG}.js`以及`config/default.js`．并将最终配置内容注入到当前应用的[xprovide](https://github.com/kiba-zhao/xprovide)中．
+// 简单示例
+module.exports = (engine)=>{
 
-> `config/{env.XBLOCK_CONFIG}.js`将合并覆盖`config/default.js`中的内容．
+}
 
-### Inject ###
-注入自定义匹配的功能模型到当前应用的[xprovide](https://github.com/kiba-zhao/xprovide)中．适用于定义业务逻辑模型对象(eggjs中的service)，数据模型对象(mvc中的model)，以及辅助功能模型对象(eggjs中的helper)等．
+// 简单使用engine中模块的示例
+const {inject} = require('brick-engine');
 
-#### Inject Config ####
-通过config定义需要注入的模型名称，以及模型相关文件的xboot引导加载参数．
+module.exports = (moduleA,moduleB)=>{
+
+    if(moduleB){
+        ...
+    }else{
+        ...
+    }
+}
+
+inject(module.exports,{deps:['moduleA','moduleB?']});
+```
+
+### Engine Config ###
+brick-engine基本配置内容
 
 ``` javascript
 // {cwd}/config/*.js
-// {cwd}/node_modules/config/*.js
+// {cwd}/node_modules/{xxx engine}/config/*.js  boot.js中设置的engine包
+// {cwd}/node_modules/{xxx plugin}/config/*.js  plugin.js中设置的package包
 
-exports.inject = {
-    // 注入名称
-    service: { 
-        patterns: 'services/**/*.js',
-        // 请参考xboot中BootLoader的opts参数说明
-        opts:{}
-    },
-    model: { patterns: 'models/**/*.js' },
-    helper: { patterns: 'helpers/**/*.js' },
+const {ENGINE} = require('brick-engine');
+
+exports[ENGINE] = {
+    app:'app.js'  //应用入口文件匹配参数(BootLoader的patterns参数)
+    modules:{     //模型化模块配置
+        // 模型名称
+        service: { 
+            patterns: 'services/**/*.js',
+            // 请参考xboot中BootLoader的opts参数说明
+            opts:{}
+        },
+        model: { patterns: 'models/**/*.js' },
+        helper: { patterns: 'helpers/**/*.js' }
+    }
 };
 ```
 
-#### Inject Describe ####
+### Package Module ###
+包模块定义内容.
+
+**ENGINE**
+brick-engine常量,在`engine.config`对应键值为brick-engine使用的配置信息．该信息定义了应用入口的文件名`app.js`,以及模块化文件的配置信息`modules:{}`.
+
+> 其他插件,engine或app,可以通过exports[ENGINE]来设置brick-engine的配置信息.
+
+#### Engine ####
+brick-engine定义的引擎工具类
+
+``` javascript
+const {Engine} = require('brick-engine');
+
+const engine = new Engine();
+```
+
+**env**
+engine实例提供的环境变量对象,根据NODE_ENV设置默认BRICK_CONFIG环境变量.
+  * 未设置BRICK_CONFIG,且NODE_ENV为production : XBLOCK_CONFIG为prod
+  * 未设置BRICK_CONFIG,且NODE_ENV不production : XBLOCK_CONFIG为local
+  
+**config**
+engine加载配置文件，根据env.XBLOCK_CONFIG合并后的配置内容对象.加载规则为：
+  * `config/{env.BRICK_CONFIG}.js` > `config/default.js`
+  * `{cwd}/config/*.js` > `{cwd}/{engine path}/config/*.js` > `{cwd}/{plugin path}/config/*.js`
+
+**options**
+
+构建engine实例的可选配置.
+
+| Property | Example         | Description                                                                          |
+|:---------|:----------------|:-------------------------------------------------------------------------------------|
+| chdir    | "/home/xxx/app" | 应用执行目录,默认为`process.cwd()`                                                   |
+| config   | "boot.js"       | 配置文件匹配规则,详细请参考: [globby](https://github.com/sindresorhus/globby#readme) |
+| reverse  | false           | 逆序加载模块．值为`true`的查找加载顺序为: `engine` > `app` > `plugins`               |
+| plugin   | true            | 是否加载插件加载．值为`false`则从plugin中加载模块                                    |
+| mode     | "xboot"         | 只加载检索支持modes设置的模块                                                        |
+| expand   | true            | 是否展开目录                                                                         |
+
+##### engine.install(module[,silent=false]) #####
+安装模块方法,将模块生成交由引擎控制．模块生成使用的依赖信息，以及在engine中的命名，通过使用[inject(module,opts)](#inject(module,opts))函数来定义．
+
+**module**
+`module`可以是`class`,`Function`或其他非`undefine`，非`null`的任意类型对象．
+
+**silent**
+成功定义模块，成员函数返回值为`true`,否则为`false`．试图安装未命名`module`,且`silent`参数不为`true`时,成员函数将直接抛出异常．
+
+##### engine.use(module[, success, fatal]) #####
+通过engine使用模块,可以声明使用依赖于`engine.install`安装的命名模块．与`engine.install`相同,通过使用[inject(module.opts)](#inject(module,opts))函数来定义．
+
+**module**
+`module`可以是`class`,`Function`或其他非`undefine`，非`null`的任意类型对象．不过允许使用未命名的`module`．
+
+**success(results)**
+成功构建模块的回调函数．回调参数为:
+
+* `results.name`: 模块命名信息
+* `results.module`: 模块构建函数
+* `results.model`: 模块对象
+
+**fatal(error)**
+异常构建模块的回调函数．如果不提供该参数，将直接抛出异常.
+
+##### engine.model(target[,success, fatal]) #####
+模型化成员函数．将`engine.install`的模块，设置为特定模块对象的成员属性．通过[provide(module,opts)](#provide(module,opts))函数来定义．
+
+**target**
+模型化对象.
+
+* `module`: 模块构造函数,或模块对象
+* `name`: 模块命
+* `model`: 模块实例对象
+
+**success(results)**
+成功构建模块的回调函数．回调参数为:
+
+* `results.name`: 模块命名信息
+* `results.module`: 模块构建函数
+* `results.model`: 模块对象
+
+**fatal(error)**
+异常构建模块的回调函数．如果不提供该参数，将直接抛出异常.
+
+##### engine.load(patterns[, opts = {}]) #####
+文件模块加载方法.使用[xboot](https://github.com/kiba-zhao/xboot)的`BootLoader`加载文件模块.
+
+**patterns**
+文件匹配参数,支持`String`和`Array<String>`类型，详细请参考: [globby](https://github.com/sindresorhus/globby#readme)中`patterns`参数.
+
+##### engine.build(patterns[, opts, success, fatal]) #####
+文件模型构建方法．使用[xboot](https://github.com/kiba-zhao/xboot)的`BootLoader`加载文件模块，並使用`engine.model`將其模型化.
+
+
+**patterns**
+文件匹配参数,支持`String`和`Array<String>`类型，详细请参考: [globby](https://github.com/sindresorhus/globby#readme)中`patterns`参数.
+
+**success(results)**
+成功构建模块的回调函数．回调参数为:
+
+* `results.name`: 模块命名信息
+* `results.module`: 模块构建函数
+* `results.model`: 模块对象
+
+**fatal(error)**
+异常构建模块的回调函数．如果不提供该参数，将直接抛出异常.
+
+##### engine.init() #####
+通过调用该方法初始化生成`engine.env`,`engine.config`.其他成员方法，也需要在初始化后才能使用．
+
+#### inject(target, opts) ####
+模块构建信息注入函数．不允许反复使用函数定义同一个模块构建对象．
+
+**target**
+模块构建对象.可以是`class`,`Function`或非`undefined`和非`null`对象.
+
+**opts**
+模块构建可选项.
+  * opts.name:  模块命名.支持`String`和`Symbol`类型的值．
+  * opts.deps:  构建时依赖的模块.支持`Array<String>`,`Array<Symbol>`,以及`Array<Object>`类型的值．
+    * opts.deps[].id: 依赖模块的命名.支持`String`和`Symbol`类型的值．
+    * opts.deps[].required: 依赖模块是否必要.
+
+#### provide(target, opts) ####
+定义成员属性使用的依赖模块信息．
+
+**target**
+模块的构建对象.可以是`class`,`Function`或非`undefined`和非`null`对象.
+
+**opts**
+模块构建可选项.
+  * opts.property:  定义的成员属性名.支持`String`和`Symbol`类型的值．
+  * opts.dep:  成员属性使用的依赖模块信息.支持`String`,`Symbol`,以及`Object`类型的值．
+    * opts.dep.id: 依赖模块的命名.支持`String`和`Symbol`类型的值．
+    * opts.dep.required: 依赖模块是否必要.
+    * opts.dep.transform: 依赖模块转换函数.
+
+
+#### Model Example####
 在模型相关的源码文件中，需要定义该文件模块依赖的上下文模块（比如各种db client模块,redis client模块以及http client模块等），以及该文件模块在模型中对应的属性名称.
 
 ``` javascript
@@ -97,11 +255,6 @@ inject(SimpleModel,{ deps:[ 'env', 'config?' ], name:'modelA'})
 //           Object.defineProperty(instance,'cfg',{value:config,writable: false});
 provide(SimpleModel, {property:'cfg', dep:'config?'});
 ```
-
-#### 函数说明 ####
-
-  * **inject**: 定义构造模块所需要使用的依赖模块，以及构造模块命名
-  * **provide**: 往模块指定属性，写入依赖模块
 
 ## Documentations ##
 使用`jsdoc`生成注释文档

@@ -28,4 +28,3 @@ module.exports = ModelA;
 
 inject(ModelA, { name: 'modelA', deps: [ 'env', 'config?' ] });
 provide(ModelA, { property: 'cfg', dep: { id: 'config', transform: _ => _ } });
-ModelA.addins = { config: 'config' };

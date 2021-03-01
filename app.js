@@ -19,7 +19,7 @@ module.exports = engine => {
   const keys = Reflect.ownKeys(modules);
   for (const key of keys) {
     const { patterns, opts } = modules[key];
-    engine.build(patterns, opts, install.bind(engine, key));
+    engine.build(patterns, opts, install.bind(this, engine, key));
   }
 };
 
@@ -32,6 +32,10 @@ function install(engine, name, targets) {
 
 function moduleFactory(targets) {
   const module = {};
+  if (!targets) {
+    return module;
+  }
+
   for (const target of targets) {
     if (target.name) {
       module[target.name] = target.model;

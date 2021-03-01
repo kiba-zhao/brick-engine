@@ -9,6 +9,8 @@
 const { ENGINE } = require('../../../../..');
 
 exports[ENGINE] = {
-  moduleA: { patterns: 'moduleA/**/*.js' },
-  moduleB: { patterns: 'moduleB/**/*.js' },
+  modules: {
+    moduleA: { patterns: 'moduleA/**/*.js' },
+    moduleB: { patterns: 'moduleB/**/*.js' },
+  },
 };

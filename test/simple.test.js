@@ -7,66 +7,57 @@
 'use strict';
 
 const path = require('path');
+const { Engine, ENGINE, inject } = require('..');
 
 const APP_PATH = path.join(__dirname, 'fixtures', 'apps', 'simple');
+const ENGINE_CONFIG = require('../config/default');
 const DEFAULT_CONFIG = require('./fixtures/apps/simple/config/default');
 const LOCAL_CONFIG = require('./fixtures/apps/simple/config/local');
 const PROD_CONFIG = require('./fixtures/apps/simple/config/prod');
 const CUSTOM_CONFIG_FUN = require('./fixtures/apps/simple/config/custom');
-const INJECT_CONFIG = require('./fixtures/apps/simple/config/inject');
+const MODULES_CONFIG = require('./fixtures/apps/simple/config/modules');
 const MODEL_A_CLASS = require('./fixtures/apps/simple/moduleA/model_a');
 const MODEL_B = require('./fixtures/apps/simple/moduleA/dir_a/model_b');
 
 describe('simple', () => {
 
-  let loader;
-  let provider;
-  const Provider = jest.fn();
-  const context = {};
+  let engine;
+  let NODE_ENV;
+  let BRICK_CONFIG;
 
   beforeAll(() => {
-    jest.doMock('xprovide', () => ({ Provider }), { virtual: true });
-    jest.resetModules();
+    engine = new Engine({ chdir: APP_PATH });
   });
 
   beforeEach(() => {
-    Provider.mockImplementation((...args) => {
-      provider = new xprovide.Provider(...args);
-      return provider;
-    });
-    loader = xboot.createBootLoader('xboot.js', context, { chdir: APP_PATH });
+    NODE_ENV = process.env.NODE_ENV;
+    BRICK_CONFIG = process.env.BRICK_CONFIG;
   });
 
   afterEach(() => {
-    Provider.mockReset();
-  });
+    if (NODE_ENV) {
+      process.env.NODE_ENV = NODE_ENV;
+    } else {
+      delete process.env.NODE_ENV;
+    }
+    if (BRICK_CONFIG) {
+      process.env.BRICK_CONFIG = BRICK_CONFIG;
+    } else {
+      delete process.env.BRICK_CONFIG;
+    }
 
+  });
 
   afterAll(() => {
-    jest.dontMock('xprovide');
+    engine = undefined;
   });
 
-  it('boot local', () => {
+  it('local environment', () => {
 
-    const envFn = jest.fn();
-    const configFn = jest.fn();
-
-    loader.forEach(_ => xboot.setup(_, xboot, context));
-
-    provider.require([ 'env' ], envFn);
-    provider.require([ 'config' ], configFn);
-
-    expect(Provider).toBeCalledTimes(1);
-    expect(Provider).toBeCalledWith();
-
-    expect(envFn).toBeCalledTimes(1);
-    const env = envFn.mock.calls[0][0];
-    expect(env).toEqual({ ...process.env, XBLOCK_CONFIG: 'local' });
-
-    expect(configFn).toBeCalledTimes(1);
-    const config = configFn.mock.calls[0][0];
-    expect(config).toEqual({
-      ...DEFAULT_CONFIG, ...LOCAL_CONFIG, field: {
+    engine.init();
+    expect(engine.env).toEqual({ ...process.env, BRICK_CONFIG: 'local' });
+    expect(engine.config).toEqual({
+      ...ENGINE_CONFIG, ...DEFAULT_CONFIG, ...LOCAL_CONFIG, field: {
         ...DEFAULT_CONFIG.field, ...LOCAL_CONFIG.field,
         object: {
           ...DEFAULT_CONFIG.field.object, ...LOCAL_CONFIG.field.object,
@@ -76,150 +67,109 @@ describe('simple', () => {
 
   });
 
-  it('boot prod', () => {
-    const envFn = jest.fn();
-    const configFn = jest.fn();
+  it('prod environment', () => {
 
-    const NODE_ENV = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
 
-    loader.forEach(_ => xboot.setup(_, xboot, context));
-
-    provider.require([ 'env' ], envFn);
-    provider.require([ 'config' ], configFn);
-
-    expect(Provider).toBeCalledTimes(1);
-    expect(Provider).toBeCalledWith();
-
-    expect(envFn).toBeCalledTimes(1);
-    const env = envFn.mock.calls[0][0];
-    expect(env).toEqual({ ...process.env, XBLOCK_CONFIG: 'prod' });
-
-    expect(configFn).toBeCalledTimes(1);
-    const config = configFn.mock.calls[0][0];
-    expect(config).toEqual({
-      ...DEFAULT_CONFIG, ...PROD_CONFIG, field: {
+    engine.init();
+    expect(engine.env).toEqual({ ...process.env, BRICK_CONFIG: 'prod' });
+    expect(engine.config).toEqual({
+      ...ENGINE_CONFIG, ...DEFAULT_CONFIG, ...PROD_CONFIG, field: {
         ...DEFAULT_CONFIG.field, ...PROD_CONFIG.field,
         object: {
           ...DEFAULT_CONFIG.field.object, ...PROD_CONFIG.field.object,
         },
       },
     });
-
-    process.env.NODE_ENV = NODE_ENV;
   });
 
-  it('boot custom', () => {
-    const envFn = jest.fn();
-    const configFn = jest.fn();
+  it('custom environment', () => {
 
-    const XBLOCK_CONFIG = process.env.XBLOCK_CONFIG;
-    process.env.XBLOCK_CONFIG = 'custom';
+    process.env.BRICK_CONFIG = 'custom';
 
-    loader.forEach(_ => xboot.setup(_, xboot, context));
+    engine.init();
+    expect(engine.env).toEqual({ ...process.env, BRICK_CONFIG: 'custom' });
 
-    provider.require([ 'env' ], envFn);
-    provider.require([ 'config' ], configFn);
-
-    expect(Provider).toBeCalledTimes(1);
-    expect(Provider).toBeCalledWith();
-
-    expect(envFn).toBeCalledTimes(1);
-    const env = envFn.mock.calls[0][0];
-    expect(env).toEqual({ ...process.env, XBLOCK_CONFIG: 'custom' });
-
-    expect(configFn).toBeCalledTimes(1);
-    const config = configFn.mock.calls[0][0];
-    const CUSTOM_CONFIG = CUSTOM_CONFIG_FUN(env);
-    expect(config).toEqual({
-      ...DEFAULT_CONFIG, ...CUSTOM_CONFIG, field: {
+    const CUSTOM_CONFIG = CUSTOM_CONFIG_FUN(engine.env);
+    expect(engine.config).toEqual({
+      ...ENGINE_CONFIG, ...DEFAULT_CONFIG, ...CUSTOM_CONFIG, field: {
         ...DEFAULT_CONFIG.field, ...CUSTOM_CONFIG.field,
         object: {
           ...DEFAULT_CONFIG.field.object, ...CUSTOM_CONFIG.field.object,
         },
       },
     });
+  });
 
-    process.env.XBLOCK_CONFIG = XBLOCK_CONFIG;
+  it('unknown environment', () => {
+
+    process.env.BRICK_CONFIG = 'unknown';
+
+    engine.init();
+    expect(engine.env).toEqual({ ...process.env, BRICK_CONFIG: 'unknown' });
+    expect(engine.config).toEqual({ ...ENGINE_CONFIG, ...DEFAULT_CONFIG });
 
   });
 
-  it('boot config not found', () => {
-    const envFn = jest.fn();
-    const configFn = jest.fn();
+  it('modules environment', () => {
 
-    const XBLOCK_CONFIG = process.env.XBLOCK_CONFIG;
-    process.env.XBLOCK_CONFIG = 'not_found';
+    process.env.BRICK_CONFIG = 'modules';
 
-    loader.forEach(_ => xboot.setup(_, xboot, context));
+    engine.init();
+    expect(engine.env).toEqual({ ...process.env, BRICK_CONFIG: 'modules' });
+    expect(engine.config).toEqual({ ...ENGINE_CONFIG, ...DEFAULT_CONFIG, ...MODULES_CONFIG, [ENGINE]: { ...ENGINE_CONFIG[ENGINE], ...MODULES_CONFIG[ENGINE] } });
 
-    provider.require([ 'env' ], envFn);
-    provider.require([ 'config' ], configFn);
 
-    expect(Provider).toBeCalledTimes(1);
-    expect(Provider).toBeCalledWith();
-
-    expect(envFn).toBeCalledTimes(1);
-    const env = envFn.mock.calls[0][0];
-    expect(env).toEqual({ ...process.env, XBLOCK_CONFIG: 'not_found' });
-
-    expect(configFn).toBeCalledTimes(1);
-    const config = configFn.mock.calls[0][0];
-    expect(config).toEqual(DEFAULT_CONFIG);
-
-    process.env.XBLOCK_CONFIG = XBLOCK_CONFIG;
-
-  });
-
-  it('boot inject', () => {
-    const envFn = jest.fn();
-    const configFn = jest.fn();
     const moduleAFn = jest.fn();
-    const moduleBFn = jest.fn();
-
-    const XBLOCK_CONFIG = process.env.XBLOCK_CONFIG;
-    process.env.XBLOCK_CONFIG = 'inject';
-
-    loader.forEach(_ => xboot.setup(_, xboot, context));
-
-    provider.require([ 'env' ], envFn);
-    provider.require([ 'config' ], configFn);
-    provider.require([ 'moduleA' ], moduleAFn);
-    provider.require([ 'moduleB' ], moduleBFn);
-
-    expect(Provider).toBeCalledTimes(1);
-    expect(Provider).toBeCalledWith();
-
-    expect(envFn).toBeCalledTimes(1);
-    const env = envFn.mock.calls[0][0];
-    expect(env).toEqual({ ...process.env, XBLOCK_CONFIG: 'inject' });
-
-    expect(configFn).toBeCalledTimes(1);
-    const config = configFn.mock.calls[0][0];
-    expect(config).toEqual({ ...DEFAULT_CONFIG, ...INJECT_CONFIG });
-
-    process.env.XBLOCK_CONFIG = XBLOCK_CONFIG;
+    inject(moduleAFn, { deps: [ 'moduleA' ] });
+    engine.use(moduleAFn);
 
     expect(moduleAFn).toBeCalledTimes(1);
     const moduleA = moduleAFn.mock.calls[0][0];
     const moduleAKeys = Object.keys(moduleA);
-    expect(moduleAKeys).toEqual([ 'modelA', 'modelB', 'modelC' ]);
-    // expect(moduleA.modelA).toBeInstanceOf(MODEL_A_CLASS);
+    expect(moduleAKeys).toEqual(expect.arrayContaining([ 'modelA', 'modelB', 'modelC' ]));
+    expect(moduleA.modelA).toBeInstanceOf(MODEL_A_CLASS);
     expect(moduleA.modelA.constructor.name).toBe(MODEL_A_CLASS.name);
-    expect(moduleA.modelA.env).toEqual(env);
-    expect(moduleA.modelA.getConfig()).toEqual(config);
-    expect(moduleA.modelA.cfg).toEqual(config);
-    expect(moduleA.modelA.config).toEqual(config);
+    expect(moduleA.modelA.env).toEqual(engine.env);
+    expect(moduleA.modelA.getConfig()).toEqual(engine.config);
+    expect(moduleA.modelA.cfg).toEqual(engine.config);
     const keys = Object.keys(MODEL_B);
     for (const key of keys) {
       expect(moduleA.modelB[key]).toEqual(MODEL_B[key]);
     }
-    expect(moduleA.modelC.env).toEqual(env);
-    expect(moduleA.modelC.getConfig()).toEqual(config);
+    expect(moduleA.modelC.env).toEqual(engine.env);
+    expect(moduleA.modelC.getConfig()).toEqual(engine.config);
+
+
+    const moduleBFn = jest.fn();
+    inject(moduleBFn, { deps: [ 'moduleB' ] });
+    engine.use(moduleBFn);
 
     expect(moduleBFn).toBeCalledTimes(1);
     const moduleB = moduleBFn.mock.calls[0][0];
     expect(moduleB).toEqual({});
   });
 
+  it('throw error', () => {
+
+    const error = new Error('test throw error');
+    const errorFn = jest.fn(() => { throw error; });
+    inject(errorFn, { name: 'errorFn' });
+
+    engine.init();
+    engine.install(errorFn);
+
+    const errorModule = jest.fn(() => { throw error; });
+    inject(errorModule, { deps: [] });
+    expect(() => engine.use(errorModule)).toThrow(error);
+    expect(errorModule).toBeCalledTimes(1);
+
+    const module = jest.fn();
+    inject(module, { deps: [ 'errorFn' ] });
+    expect(() => engine.use(module)).toThrow(error);
+    expect(errorFn).toBeCalledTimes(1);
+    expect(module).not.toHaveBeenCalled();
+
+
+  });
 });

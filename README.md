@@ -86,6 +86,7 @@ exports[ENGINE] = {
 包模块定义内容.
 
 **ENGINE**
+
 brick-engine常量,在`engine.config`对应键值为brick-engine使用的配置信息．该信息定义了应用入口的文件名`app.js`,以及模块化文件的配置信息`modules:{}`.
 
 > 其他插件,engine或app,可以通过exports[ENGINE]来设置brick-engine的配置信息.
@@ -100,12 +101,14 @@ const engine = new Engine();
 ```
 
 **env**
+
 engine实例提供的环境变量对象,根据NODE_ENV设置默认BRICK_CONFIG环境变量.
-  * 未设置BRICK_CONFIG,且NODE_ENV为production : XBLOCK_CONFIG为prod
-  * 未设置BRICK_CONFIG,且NODE_ENV不production : XBLOCK_CONFIG为local
+  * 未设置BRICK_CONFIG,且NODE_ENV为production : BRICK_CONFIG为prod
+  * 未设置BRICK_CONFIG,且NODE_ENV不production : BRICK_CONFIG为local
   
 **config**
-engine加载配置文件，根据env.XBLOCK_CONFIG合并后的配置内容对象.加载规则为：
+
+engine加载配置文件，根据env.BRICK_CONFIG合并后的配置内容对象.加载规则为：
   * `config/{env.BRICK_CONFIG}.js` > `config/default.js`
   * `{cwd}/config/*.js` > `{cwd}/{engine path}/config/*.js` > `{cwd}/{plugin path}/config/*.js`
 
@@ -126,18 +129,22 @@ engine加载配置文件，根据env.XBLOCK_CONFIG合并后的配置内容对象
 安装模块方法,将模块生成交由引擎控制．模块生成使用的依赖信息，以及在engine中的命名，通过使用[inject(module,opts)](#inject(module,opts))函数来定义．
 
 **module**
+
 `module`可以是`class`,`Function`或其他非`undefine`，非`null`的任意类型对象．
 
 **silent**
+
 成功定义模块，成员函数返回值为`true`,否则为`false`．试图安装未命名`module`,且`silent`参数不为`true`时,成员函数将直接抛出异常．
 
 ##### engine.use(module[, success, fatal]) #####
 通过engine使用模块,可以声明使用依赖于`engine.install`安装的命名模块．与`engine.install`相同,通过使用[inject(module.opts)](#inject(module,opts))函数来定义．
 
 **module**
+
 `module`可以是`class`,`Function`或其他非`undefine`，非`null`的任意类型对象．不过允许使用未命名的`module`．
 
 **success(results)**
+
 成功构建模块的回调函数．回调参数为:
 
 * `results.name`: 模块命名信息
@@ -145,12 +152,14 @@ engine加载配置文件，根据env.XBLOCK_CONFIG合并后的配置内容对象
 * `results.model`: 模块对象
 
 **fatal(error)**
+
 异常构建模块的回调函数．如果不提供该参数，将直接抛出异常.
 
 ##### engine.model(target[,success, fatal]) #####
 模型化成员函数．将`engine.install`的模块，设置为特定模块对象的成员属性．通过[provide(module,opts)](#provide(module,opts))函数来定义．
 
 **target**
+
 模型化对象.
 
 * `module`: 模块构造函数,或模块对象
@@ -158,6 +167,7 @@ engine加载配置文件，根据env.XBLOCK_CONFIG合并后的配置内容对象
 * `model`: 模块实例对象
 
 **success(results)**
+
 成功构建模块的回调函数．回调参数为:
 
 * `results.name`: 模块命名信息
@@ -165,12 +175,14 @@ engine加载配置文件，根据env.XBLOCK_CONFIG合并后的配置内容对象
 * `results.model`: 模块对象
 
 **fatal(error)**
+
 异常构建模块的回调函数．如果不提供该参数，将直接抛出异常.
 
 ##### engine.load(patterns[, opts = {}]) #####
 文件模块加载方法.使用[xboot](https://github.com/kiba-zhao/xboot)的`BootLoader`加载文件模块.
 
 **patterns**
+
 文件匹配参数,支持`String`和`Array<String>`类型，详细请参考: [globby](https://github.com/sindresorhus/globby#readme)中`patterns`参数.
 
 ##### engine.build(patterns[, opts, success, fatal]) #####
@@ -178,9 +190,11 @@ engine加载配置文件，根据env.XBLOCK_CONFIG合并后的配置内容对象
 
 
 **patterns**
+
 文件匹配参数,支持`String`和`Array<String>`类型，详细请参考: [globby](https://github.com/sindresorhus/globby#readme)中`patterns`参数.
 
 **success(results)**
+
 成功构建模块的回调函数．回调参数为:
 
 * `results.name`: 模块命名信息
@@ -188,6 +202,7 @@ engine加载配置文件，根据env.XBLOCK_CONFIG合并后的配置内容对象
 * `results.model`: 模块对象
 
 **fatal(error)**
+
 异常构建模块的回调函数．如果不提供该参数，将直接抛出异常.
 
 ##### engine.init() #####
@@ -197,9 +212,11 @@ engine加载配置文件，根据env.XBLOCK_CONFIG合并后的配置内容对象
 模块构建信息注入函数．不允许反复使用函数定义同一个模块构建对象．
 
 **target**
+
 模块构建对象.可以是`class`,`Function`或非`undefined`和非`null`对象.
 
 **opts**
+
 模块构建可选项.
   * opts.name:  模块命名.支持`String`和`Symbol`类型的值．
   * opts.deps:  构建时依赖的模块.支持`Array<String>`,`Array<Symbol>`,以及`Array<Object>`类型的值．
@@ -210,9 +227,11 @@ engine加载配置文件，根据env.XBLOCK_CONFIG合并后的配置内容对象
 定义成员属性使用的依赖模块信息．
 
 **target**
+
 模块的构建对象.可以是`class`,`Function`或非`undefined`和非`null`对象.
 
 **opts**
+
 模块构建可选项.
   * opts.property:  定义的成员属性名.支持`String`和`Symbol`类型的值．
   * opts.dep:  成员属性使用的依赖模块信息.支持`String`,`Symbol`,以及`Object`类型的值．

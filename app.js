@@ -10,6 +10,11 @@ const { ENGINE } = require('./lib/constants');
 const { inject } = require('./lib/inject');
 
 module.exports = engine => {
+
+  const factory = engineFactory.bind(this, engine);
+  inject(factory, { name: ENGINE });
+  engine.install(factory);
+
   const config = engine.config[ENGINE];
   const modules = config.modules;
   if (!modules) {
@@ -42,4 +47,8 @@ function moduleFactory(targets) {
     }
   }
   return module;
+}
+
+function engineFactory(engine) {
+  return engine;
 }

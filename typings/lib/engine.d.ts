@@ -70,7 +70,7 @@ declare class Engine {
      */
     load(patterns: string | Array<string>, opts?: any): Array<any>;
     /**
-     * 模块化构建方法：加载文件模块后,将其模型化
+     * 模块构建方法：加载文件模块后,将其模型化
      * @param {String | Array<String>} patterns 匹配文件规则
      * @param {Object} opts BootLoader可选参数
      * @param {Function} success 成功回调函数

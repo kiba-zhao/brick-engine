@@ -4,7 +4,7 @@
  * @param {Array<any>} args 构建参数
  * @return {any} 构建生成的模块
  */
-export function buildModel(factory: any | Function | any, ...args: Array<any>): any;
+export function buildModel(factory: any | Function | any, deps: any, ...modules: any[]): any;
 /**
  * 初始化模型函数
  * @param {Target} target 模型化目标

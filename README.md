@@ -67,9 +67,7 @@ brick-engine基本配置内容
 // {cwd}/node_modules/{xxx engine}/config/*.js  boot.js中设置的engine包
 // {cwd}/node_modules/{xxx plugin}/config/*.js  plugin.js中设置的package包
 
-const {ENGINE} = require('brick-engine');
-
-exports[ENGINE] = {
+exports.engine = {
     app:'app.js'  //应用入口文件匹配参数(BootLoader的patterns参数)
     modules:{     //模型化模块配置
         // 模型名称

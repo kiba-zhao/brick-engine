@@ -15,7 +15,7 @@ module.exports = engine => {
   inject(factory, { name: ENGINE });
   engine.install(factory);
 
-  const config = engine.config[ENGINE];
+  const config = engine.config.engine;
   const modules = config.modules;
   if (!modules) {
     return;

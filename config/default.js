@@ -6,8 +6,6 @@
  */
 'use strict';
 
-const { ENGINE } = require('..');
-
-exports[ENGINE] = {
+exports.engine = {
   app: 'app.js',
 };

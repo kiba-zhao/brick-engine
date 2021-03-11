@@ -6,9 +6,7 @@
  */
 'use strict';
 
-const { ENGINE } = require('../../../../..');
-
-exports[ENGINE] = {
+exports.engine = {
   modules: {
     moduleA: { patterns: 'moduleA/**/*.js' },
     moduleB: { patterns: 'moduleB/**/*.js' },

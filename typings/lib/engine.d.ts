@@ -7,17 +7,17 @@ declare class Engine {
     constructor(opts?: any);
     /**
      * 构造可选参数
-     * @return {Object}
+     * @return {Object} 构建可选项
      */
     get options(): any;
     /**
      * 环境变量
-     * @return {Object}
+     * @return {Object} 环境变量
      */
     get env(): any;
     /**
      * 配置文件内容
-     * @return {Object}
+     * @return {Object} 配置文件
      */
     get config(): any;
     /**
@@ -75,9 +75,9 @@ declare class Engine {
      * @param {Object} opts BootLoader可选参数
      * @param {Function} success 成功回调函数
      * @param {Function} fatal 失败回调函数
-     * @return {}
+     * @return {ModuleFactory} 模型工厂
      */
-    build(patterns: string | Array<string>, opts: any, success: Function, fatal: Function): any;
+    build(patterns: string | Array<string>, opts: any, success: Function, fatal: Function): ModuleFactory;
     /**
      * 初始化引擎方法
      */
@@ -87,6 +87,7 @@ declare class Engine {
     [ENV]: any;
     [CONFIG]: any;
 }
+import ModuleFactory = require("./module_factory");
 declare const OPTIONS: unique symbol;
 declare const PROVIDER: unique symbol;
 import Provider = require("./provider");

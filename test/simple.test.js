@@ -7,7 +7,7 @@
 'use strict';
 
 const path = require('path');
-const { Engine, ENGINE, inject } = require('..');
+const { Engine, inject } = require('..');
 
 const APP_PATH = path.join(__dirname, 'fixtures', 'apps', 'simple');
 const ENGINE_CONFIG = require('../config/default');
@@ -117,7 +117,7 @@ describe('simple', () => {
 
     engine.init();
     expect(engine.env).toEqual({ ...process.env, BRICK_CONFIG: 'modules' });
-    expect(engine.config).toEqual({ ...ENGINE_CONFIG, ...DEFAULT_CONFIG, ...MODULES_CONFIG, [ENGINE]: { ...ENGINE_CONFIG[ENGINE], ...MODULES_CONFIG[ENGINE] } });
+    expect(engine.config).toEqual({ ...ENGINE_CONFIG, ...DEFAULT_CONFIG, ...MODULES_CONFIG, engine: { ...ENGINE_CONFIG.engine, ...MODULES_CONFIG.engine } });
 
 
     const moduleAFn = jest.fn();

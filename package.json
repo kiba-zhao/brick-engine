@@ -10,7 +10,7 @@
     "build:w": "tsc -d -w",
     "lint": "eslint --fix .",
     "check": "npm run build && npm run lint",
-    "test": "npm run check && jest --coverage --env=node --runInBand",
+    "test": "npm run check && jest --coverage --env=node",
     "watch": "jest --watch"
   },
   "files": [

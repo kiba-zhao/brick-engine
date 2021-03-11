@@ -223,6 +223,35 @@ describe('lib/provider', () => {
 
     });
 
+
+    it('require success throw error', () => {
+
+      const provider = new Provider();
+      const model1 = Symbol('modle1');
+      const error1 = new Error('Error1');
+      const success1 = jest.fn(() => { throw error1; });
+
+      provider.define(model1, [], () => model1);
+
+      expect(() => {
+        provider.require([ model1 ], success1);
+      }).toThrow(error1);
+      expect(success1).toBeCalledTimes(1);
+
+
+      const model2 = Symbol('modle2');
+      const error2 = new Error('Error2');
+      const success2 = jest.fn(() => { throw error2; });
+      provider.require([ model2 ], success2);
+
+      expect(() => {
+        provider.define(model2, [], success2);
+      }).toThrow(error2);
+      expect(success2).toBeCalledTimes(1);
+
+    });
+
+
     it('wrong dep', () => {
       const provider = new Provider();
       const success = jest.fn();

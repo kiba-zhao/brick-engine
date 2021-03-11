@@ -29,6 +29,7 @@ module.exports = engine => {
 };
 
 function install(engine, name, targets) {
+
   const factory = moduleFactory.bind(this, targets);
   inject(factory, { name });
   engine.install(factory);

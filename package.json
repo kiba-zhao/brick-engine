@@ -2,6 +2,9 @@
   "name": "brick-engine",
   "version": "0.8.0",
   "description": "basic xboot engine",
+  "bin":{
+    "brick-engine":"./bin/brick-engine.js"
+  },
   "main": "index.js",
   "types": "typings/index.d.ts",
   "scripts": {

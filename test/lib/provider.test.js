@@ -6,432 +6,247 @@
  */
 'use strict';
 
-const Provider = require('../../lib/provider');
+import {jest} from '@jest/globals';
+import { Provider } from '../../lib/provider';
+import faker from 'faker';
 
 class ModelClass {
 }
 
 describe('lib/provider', () => {
 
-  describe('simple', () => {
+  /**
+   * @type Provider
+   */
+  let provider;
 
-    it('success', () => {
+  beforeEach(()=>{
+    provider = new Provider();
+  });
+  
+  describe('require',()=>{
 
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
+    it('success',async ()=>{
+
+      const ids = [ 'string', 1, true, ModelClass]; 
       const factories = [];
       const models = [];
 
+      let i = 0;
       for (const id of ids) {
-        const model = Symbol(id);
+        const model = Symbol(++i);
         models.push(model);
         factories.push(jest.fn(() => model));
         provider.define(id, [], factories[factories.length - 1]);
       }
 
-      const success = jest.fn();
-      provider.require(ids.map(_ => ({ id: _ })), success);
-      const success_next = jest.fn();
-      provider.require(ids, success_next);
+      const res = await provider.require(...ids.map(_=>({id:_,required:true})));
 
-      expect(success).toBeCalledTimes(1);
-      expect(success).toBeCalledWith(...models);
-      expect(success_next).toBeCalledTimes(1);
-      expect(success_next).toBeCalledWith(...models);
-      expect(factories[0]).toBeCalledTimes(1);
-      expect(factories[0]).toBeCalledWith();
-      expect(factories[1]).toBeCalledTimes(1);
-      expect(factories[1]).toBeCalledWith();
-      expect(factories[2]).toBeCalledTimes(1);
-      expect(factories[2]).toBeCalledWith();
+      for(let factory of factories) {
+        expect(factory).toBeCalledTimes(1);
+        expect(factory).toBeCalledWith();
+      }
+      expect(res).toEqual(models);
     });
 
-    it('success with require first', () => {
+    it('success with require first',async ()=>{
 
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
+      const ids = [ 'string', 1, true, ModelClass]; 
       const factories = [];
       const models = [];
-
-      const success = jest.fn();
-      provider.require(ids, success);
-
+      const handle = provider.require(...ids.map(_=>({id:_,required:true})));
+      
+      let i = 0;
       for (const id of ids) {
-        const model = Symbol(id);
+        const model = Symbol(++i);
         models.push(model);
         factories.push(jest.fn(() => model));
         provider.define(id, [], factories[factories.length - 1]);
       }
 
-      expect(success).toBeCalledTimes(1);
-      expect(success).toBeCalledWith(...models);
-      expect(factories[0]).toBeCalledTimes(1);
-      expect(factories[0]).toBeCalledWith();
-      expect(factories[1]).toBeCalledTimes(1);
-      expect(factories[1]).toBeCalledWith();
-      expect(factories[2]).toBeCalledTimes(1);
-      expect(factories[2]).toBeCalledWith();
+      const res = await handle;
+      for(let factory of factories) {
+        expect(factory).toBeCalledTimes(1);
+        expect(factory).toBeCalledWith();
+      }
+      expect(res).toEqual(models);
     });
 
-    it('require with dep', () => {
-
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
+    it('require with dep',async ()=>{
+      
+      const ids = [ 'string', 1, true, ModelClass]; 
       const factories = [];
       const models = [];
 
-      provider.require(ids.slice(0, 1), m => {
-        expect(m).toEqual(models[0]);
-      });
-
-      for (let i = 0; i < ids.length; i++) {
-        const id = ids[i];
-        const model = Symbol(id);
+      let i = 0;
+      for (const id of ids) {
+        const model = Symbol(i);
         models.push(model);
         factories.push(jest.fn(() => model));
-        provider.define(id, ids.slice(i + 1), factories[i]);
+        provider.define(id, ids.slice(i + 1).map(_=>({id:_,required:true})), factories[factories.length - 1]);
+        i++;
       }
 
-      expect(factories[0]).toBeCalledTimes(1);
-      expect(factories[0]).toBeCalledWith(...(models.slice(1)));
-      expect(factories[1]).toBeCalledTimes(1);
-      expect(factories[1]).toBeCalledWith(...(models.slice(2)));
-      expect(factories[2]).toBeCalledTimes(1);
-      expect(factories[2]).toBeCalledWith();
+      const res = await provider.require(...ids.map(_=>({id:_,required:true})));
 
+      i=0;
+      for(let factory of factories) {
+        expect(factory).toBeCalledTimes(1);
+        expect(factory).toBeCalledWith(...models.slice(i+1));
+        i++;
+      }
+      expect(res).toEqual(models);
+      
     });
 
-    it('require with single dep', () => {
+    it('require with optional dep', async () => {
 
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
+      const ids = ['string', 1, true, ModelClass];
       const factories = [];
       const models = [];
 
-      const success = jest.fn();
-      provider.require(ids.slice(0, 1), success);
-
-      for (let i = 0; i < ids.length; i++) {
-        const id = ids[i];
-        const model = Symbol(id);
+      const handle = provider.require(...ids.map(_ => ({ id: _, required: false })));
+      
+      let i = 0;
+      for (const id of ids) {
+        const model = Symbol(i);
         models.push(model);
         factories.push(jest.fn(() => model));
-        provider.define(id, ids.slice(i + 1, i + 2).map(_ => ({ id: _ })), factories[i]);
+        provider.define(id, ids.slice(i + 1).map(_ => ({ id: _, required: false })), factories[factories.length - 1]);
+        i++;
       }
 
-      expect(success).toBeCalledTimes(1);
-      expect(success).toBeCalledWith(models[0]);
-      expect(factories[0]).toBeCalledTimes(1);
-      expect(factories[0]).toBeCalledWith(models[1]);
-      expect(factories[1]).toBeCalledTimes(1);
-      expect(factories[1]).toBeCalledWith(models[2]);
-      expect(factories[2]).toBeCalledTimes(1);
-      expect(factories[2]).toBeCalledWith();
-    });
 
-    it('require with optional dep', () => {
-
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
-      const factories = [];
-      const models = [];
-
-      for (let i = 0; i < ids.length; i++) {
-        const id = ids[i];
-        const model = Symbol(id);
-        models.push(model);
-        factories.push(jest.fn(() => model));
-        provider.define(id, ids.slice(i + 1, i + 2), factories[i]);
+      let res = await handle;
+      i = 0;
+      for (let factory of factories) {
+        expect(factory).not.toBeCalled();
+        i++;
       }
+      expect(res).toEqual(models.map(_=>undefined));
 
-      const success = jest.fn();
-      provider.require([ `${ids[0]}?`, { id: 'opt1', required: false }], success);
-
-      expect(success).toBeCalledTimes(1);
-      expect(success).toBeCalledWith(models[0], undefined);
-      expect(factories[0]).toBeCalledTimes(1);
-      expect(factories[0]).toBeCalledWith(models[1]);
-      expect(factories[1]).toBeCalledTimes(1);
-      expect(factories[1]).toBeCalledWith(models[2]);
-      expect(factories[2]).toBeCalledTimes(1);
-      expect(factories[2]).toBeCalledWith();
+      res = await provider.require(...ids.map(_ => ({ id: _, required: false })));
+      i = 0;
+      for (let factory of factories) {
+        expect(factory).toBeCalledTimes(1);
+        expect(factory).toBeCalledWith(...models.slice(i + 1));
+        i++;
+      }
+      expect(res).toEqual(models);      
 
     });
 
-    it('require fatal', () => {
-
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
+    it('require error',async ()=>{
+      
+      const ids = [ 'string', 1, true, ModelClass]; 
       const factories = [];
       const models = [];
-      const success = jest.fn();
-      const fatal = jest.fn();
       const error = new Error();
 
-      for (let i = 0; i < ids.length; i++) {
-        const id = ids[i];
-        const model = Symbol(id);
-        models.push(model);
-        factories.push(jest.fn(() => model));
-        provider.define(id, ids.slice(i + 1, i + 2), factories[i]);
-      }
-
-      const errorFn = jest.fn(() => { throw error; });
-      provider.define('errorFn', [], errorFn);
-      provider.require([ 'errorFn', ...ids ], success, fatal);
-
-      expect(success).not.toHaveBeenCalled();
-      expect(fatal).toHaveBeenCalledTimes(1);
-      expect(fatal).toHaveBeenCalledWith(error);
-      expect(errorFn).toBeCalledTimes(1);
-      expect(errorFn).toBeCalledWith();
-      expect(factories[0]).not.toHaveBeenCalled();
-      expect(factories[1]).not.toHaveBeenCalled();
-      expect(factories[2]).not.toHaveBeenCalled();
-
-    });
-
-    it('require error', () => {
-
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
-      const factories = [];
-      const models = [];
-      const success = jest.fn();
-      const error = new Error();
-
-      for (let i = 0; i < ids.length; i++) {
-        const id = ids[i];
-        const model = Symbol(id);
-        models.push(model);
-        factories.push(jest.fn(() => model));
-        provider.define(id, ids.slice(i + 1, i + 2), factories[i]);
-      }
-
-      const errorFn = jest.fn(() => { throw error; });
-      provider.define('errorFn', [], errorFn);
-
-      expect(() => {
-        provider.require([ 'errorFn', ...ids ], success);
-      }).toThrow(error);
-      expect(success).not.toHaveBeenCalled();
-      expect(errorFn).toBeCalledTimes(1);
-      expect(errorFn).toBeCalledWith();
-      expect(factories[0]).not.toHaveBeenCalled();
-      expect(factories[1]).not.toHaveBeenCalled();
-      expect(factories[2]).not.toHaveBeenCalled();
-
-    });
-
-
-    it('require success throw error', () => {
-
-      const provider = new Provider();
-      const model1 = Symbol('modle1');
-      const error1 = new Error('Error1');
-      const success1 = jest.fn(() => { throw error1; });
-
-      provider.define(model1, [], () => model1);
-
-      expect(() => {
-        provider.require([ model1 ], success1);
-      }).toThrow(error1);
-      expect(success1).toBeCalledTimes(1);
-
-
-      const model2 = Symbol('modle2');
-      const error2 = new Error('Error2');
-      const success2 = jest.fn(() => { throw error2; });
-      provider.require([ model2 ], success2);
-
-      expect(() => {
-        provider.define(model2, [], success2);
-      }).toThrow(error2);
-      expect(success2).toBeCalledTimes(1);
-
-    });
-
-
-    it('wrong dep', () => {
-      const provider = new Provider();
-      const success = jest.fn();
-
-      expect(() => {
-        provider.require([ null ], success);
-      }).toThrow();
-
-      expect(() => {
-        provider.require([ undefined ], success);
-      }).toThrow();
-
-      expect(() => {
-        provider.require([ true ], success);
-      }).toThrow();
-
-      expect(() => {
-        provider.require([ 123 ], success);
-      }).toThrow();
-
-      expect(success).not.toHaveBeenCalled();
-    });
-
-  });
-
-  describe('provide with class', () => {
-
-    it('success', () => {
-
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
-      const factories = [];
-
+      let i = 0;
       for (const id of ids) {
-        factories.push(ModelClass);
+        const model = Symbol(++i);
+        models.push(model);
+        factories.push(jest.fn(() => { throw error; }));
         provider.define(id, [], factories[factories.length - 1]);
       }
 
-      const success = jest.fn();
-      provider.require(ids, success);
-      const success_next = jest.fn();
-      provider.require(ids, success_next);
+      const res = provider.require(...ids.map(_=>({id:_,required:true})));
+      await expect(res).rejects.toBe(error);
 
-      expect(success).toBeCalledTimes(1);
-      expect(success.mock.calls[0]).toHaveLength(3);
-      for (const model of success.mock.calls[0]) {
-        expect(model).toBeInstanceOf(ModelClass);
+      i=0;
+      for(let factory of factories) {
+        if (i>0) {
+          expect(factory).not.toBeCalled();
+        }else{
+          expect(factory).toBeCalledTimes(1);
+          expect(factory).toBeCalledWith();
+        }
+        i++;
       }
-      expect(success_next).toBeCalledTimes(1);
-      expect(success_next.mock.calls[0]).toHaveLength(3);
-      for (const model of success_next.mock.calls[0]) {
-        expect(model).toBeInstanceOf(ModelClass);
-      }
+      
     });
 
-    it('require with dep', () => {
+    it('require wrong dep',async ()=>{
 
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
-      const factories = [];
-      const success = jest.fn();
-
-      provider.require(ids.slice(0, 1), success);
-
-      for (let i = 0; i < ids.length; i++) {
-        const id = ids[i];
-        factories.push(ModelClass);
-        provider.define(id, ids.slice(i + 1), factories[i]);
-      }
-
-      expect(success).toBeCalledTimes(1);
-      expect(success.mock.calls[0]).toHaveLength(1);
-      for (const model of success.mock.calls[0]) {
-        expect(model).toBeInstanceOf(ModelClass);
-      }
-
+      const error = '[brick-engine Provider] require Error: wrong deps argument';
+      
+      await expect(provider.require(null)).rejects.toThrow(error);
+      await expect(provider.require(undefined)).rejects.toThrow(error);
+      await expect(provider.require(faker.datatype.number())).rejects.toThrow(error);
+      await expect(provider.require(faker.datatype.string())).rejects.toThrow(error);
+      await expect(provider.require(faker.datatype.boolean())).rejects.toThrow(error);
+      await expect(provider.require(faker.datatype.array())).rejects.toThrow(error);
+      await expect(provider.require({})).rejects.toThrow(error);
+      await expect(provider.require(faker.datatype.datetime())).rejects.toThrow(error);
+      await expect(provider.require(Symbol())).rejects.toThrow(error);
+      
     });
-
+    
   });
 
+  describe('define',()=>{
 
-  describe('provide with not function', () => {
+    it('define class',async ()=>{
 
-    it('success', () => {
-
-      const provider = new Provider();
       const ids = [ 'model1', 'model2', 'model3' ];
-      const models = [];
-
+      const pre_optional = await provider.require(...ids.map(_=>({id:_,required:false})));
+      
       for (const id of ids) {
-        const model = Symbol(id);
-        models.push(model);
-        provider.define(id, [], model);
+        provider.define(id, [], ModelClass);
       }
 
-      const success = jest.fn();
-      provider.require(ids, success);
+      const required = await provider.require(...ids.map(_=>({id:_,required:true})));
+      const optional = await provider.require(...ids.map(_=>({id:_,required:false})));
 
-      expect(success).toBeCalledTimes(1);
-      expect(success).toBeCalledWith(...models);
+      expect(pre_optional).toHaveLength(ids.length);
+      expect(required).toHaveLength(ids.length);
+      expect(optional).toHaveLength(ids.length);
+      for(let model of pre_optional) {
+        expect(model).toBeUndefined();
+      }
+      for(let model of required) {
+        expect(model).toBeInstanceOf(ModelClass);
+      }
+      for(let model of optional) {
+        expect(model).toBeInstanceOf(ModelClass);
+      }
 
     });
 
-    it('success with require first', () => {
+    it('define wrong',async ()=>{
 
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
-      const models = [];
+      const WRONG_ID = '[brick-engine Provider] define Error: wrong id argument';
+      
+      expect(()=>provider.define()).toThrow(WRONG_ID);
+      expect(()=>provider.define(null)).toThrow(WRONG_ID);
 
-      const success = jest.fn();
-      provider.require(ids, success);
+      const WRONG_DEPS = '[brick-engine Provider] define Error: wrong deps argument';
+      
+      expect(()=>provider.define(faker.datatype.string())).toThrow(WRONG_DEPS);
+      expect(()=>provider.define(faker.datatype.string(),null)).toThrow(WRONG_DEPS);
+      expect(()=>provider.define(faker.datatype.string(),faker.datatype.number())).toThrow(WRONG_DEPS);
+      expect(()=>provider.define(faker.datatype.string(),faker.datatype.datetime())).toThrow(WRONG_DEPS);
+      expect(()=>provider.define(faker.datatype.boolean(),faker.datatype.boolean())).toThrow(WRONG_DEPS);
+      expect(()=>provider.define(faker.datatype.number(),faker.datatype.array(1))).toThrow(WRONG_DEPS);
+      expect(()=>provider.define(faker.datatype.datetime(),{})).toThrow(WRONG_DEPS);
+      expect(()=>provider.define(Symbol(),Symbol())).toThrow(WRONG_DEPS);
 
-      for (const id of ids) {
-        const model = Symbol(id);
-        models.push(model);
-        provider.define(id, [], model);
-      }
+      const WRONG_FACTORY = '[brick-engine Provider] define Error: wrong factory argument';
 
-      expect(success).toBeCalledTimes(1);
-      expect(success).toBeCalledWith(...models);
+      expect(()=>provider.define(faker.datatype.string(),[])).toThrow(WRONG_FACTORY);
+      expect(()=>provider.define(faker.datatype.string(),[],null)).toThrow(WRONG_FACTORY);
+      expect(()=>provider.define(faker.datatype.string(),[],faker.datatype.number())).toThrow(WRONG_FACTORY);
+      expect(()=>provider.define(faker.datatype.string(),[],faker.datatype.string())).toThrow(WRONG_FACTORY);
+      expect(()=>provider.define(faker.datatype.string(),[],faker.datatype.boolean())).toThrow(WRONG_FACTORY);
+      expect(()=>provider.define(faker.datatype.string(),[],faker.datatype.array())).toThrow(WRONG_FACTORY);
+      expect(()=>provider.define(faker.datatype.string(),[],faker.datatype.datetime())).toThrow(WRONG_FACTORY);
+      expect(()=>provider.define(faker.datatype.string(),[],{})).toThrow(WRONG_FACTORY);
+      expect(()=>provider.define(faker.datatype.string(),[],Symbol())).toThrow(WRONG_FACTORY);
 
+      const WRONG_1 = '';
     });
-
-    it('success undefined', () => {
-
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
-      const models = [];
-
-      for (const id of ids) {
-        const model = Symbol(id);
-        models.push(model);
-        provider.define(id, [], model);
-      }
-
-      let success = jest.fn();
-      provider.require(ids, success);
-
-      expect(success).toBeCalledTimes(1);
-      expect(success).toBeCalledWith(...models);
-
-      const undefined_id = 'undefined';
-      provider.define(undefined_id, []);
-
-      success = jest.fn();
-      provider.require([ undefined_id ], success);
-
-      expect(success).toBeCalledTimes(1);
-      expect(success).toBeCalledWith(undefined);
-
-    });
-
-    it('success undefined with require first', () => {
-
-      const provider = new Provider();
-      const ids = [ 'model1', 'model2', 'model3' ];
-      const models = [];
-
-      let success = jest.fn();
-      provider.require(ids, success);
-
-      for (const id of ids) {
-        const model = Symbol(id);
-        models.push(model);
-        provider.define(id, [], model);
-      }
-
-      expect(success).toBeCalledTimes(1);
-      expect(success).toBeCalledWith(...models);
-
-      const undefined_id = 'undefined';
-      success = jest.fn();
-      provider.require([ undefined_id ], success);
-      provider.define(undefined_id, []);
-
-      expect(success).toBeCalledTimes(1);
-      expect(success).toBeCalledWith(undefined);
-
-    });
-
+    
   });
 
 });

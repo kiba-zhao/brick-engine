@@ -34,6 +34,7 @@ export class Provider {
      * @param {Map<ProviderStoreKey,ProviderStoreValue>} [store] 存储对象
      */
     constructor(store?: Map<ProviderStoreKey, ProviderStoreValue>);
+    get pendings(): void;
     /**
      * 是否存在指定模型
      * @param {ProviderStoreKey} id 模型id

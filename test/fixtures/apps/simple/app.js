@@ -4,7 +4,7 @@
  * @author kiba.x.zhao <kiba.rain@qq.com>
  * @license MIT
  */
-'use strict';
+
 
 const { inject } = require('../../../..');
 

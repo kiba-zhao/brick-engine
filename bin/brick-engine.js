@@ -6,7 +6,7 @@
  * @author kiba.x.zhao <kiba.rain@qq.com>
  * @license MIT
  */
-'use strict';
+
 
 const Engine = require('../lib/engine');
 

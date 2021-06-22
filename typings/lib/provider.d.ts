@@ -1,74 +1,131 @@
-export = Provider;
 /**
- * 提供器可选项
- * @typedef {Object} Opts
- * @property {boolean} cache 是否缓存创建结果
+ * 存储key
+ * @typedef {any} ProviderStoreKey
  */
 /**
- * 提供器
- * @class
- * @param {Object} store 存储对象
- * @param {Opts} opts 可选项
+ * 存储内容
+ * @typedef {Object} ProviderStoreValue
+ * @property {Array<ProviderDependency>} [deps] 依赖对象信息列表
+ * @property {any} [model] 实例化对象
+ * @property {ProviderFactory} factory 构建工厂
+ * @property {boolean} needCache 是否缓存实例化对象
  */
-declare class Provider {
-    constructor(store?: {}, opts?: {
-        cache: boolean;
-    });
+/**
+ * 依赖信息
+ * @typedef {Object} ProviderDependency
+ * @property {ProviderStoreKey} id 依赖对象id
+ * @property {boolean} required 依赖是否必要
+ */
+/**
+ * 构建工厂
+ * @typedef {Function} ProviderFactory
+ */
+/**
+ * 待处理项
+ * @typedef {Object} ProviderPending
+ * @property {Array<ProviderDependency>} deps 依赖对象信息列表
+ * @property {Function} success 成功回调函数
+ * @property {Function} fatal 失败回调函数
+ */
+export class Provider {
+    /**
+     * 提供器构造函数
+     * @class
+     * @param {Map<ProviderStoreKey,ProviderStoreValue>} [store] 存储对象
+     */
+    constructor(store?: Map<ProviderStoreKey, ProviderStoreValue>);
+    /**
+     * 是否存在指定模型
+     * @param {ProviderStoreKey} id 模型id
+     * @return {boolean} 是否存在
+     */
+    contains(id: ProviderStoreKey): boolean;
     /**
      * 请求依赖模型
-     * @param {Array<String> | Array<Symbol> | Array<DepRefer>} deps 模型依赖
-     * @param {Function} success 成功回调
-     * @param {Function} fatal 失败回调(可选)
+     * @param {...ProviderDependency} deps 模型依赖
+     * @return {Array<any>} 模块数组
      */
-    require(deps: Array<string> | Array<Symbol> | Array<DepRefer>, success: Function, fatal: Function): void;
+    require(...deps: ProviderDependency[]): Array<any>;
     /**
      * 定义模型
-     * @param {String | Symbol} id 模型Id
-     * @param {Array<String> | Array<Symbol> | Array<DepRefer>} deps 模型依赖
-     * @param {any} factory 模型构建函数或模型本身
-     * @param {Opts} opts 可选项
+     * @param {ProviderStoreKey} id 模型Id
+     * @param {Array<ProviderDependency>} deps 模型依赖
+     * @param {ProviderFactory} factory 模型构建函数或模型本身
      */
-    define(id: string | Symbol, deps: Array<string> | Array<Symbol> | Array<DepRefer>, factory: any, opts?: Opts): void;
-}
-declare namespace Provider {
-    export { DepRefer, InjectOpts, Opts };
+    define(id: ProviderStoreKey, deps: Array<ProviderDependency>, factory: ProviderFactory): void;
+    /**
+     * @private
+     * @type {number}
+     */
+    private [PENDING_COUNT];
+    /**
+     * @private
+     * @readonly
+     * @type {Map<ProviderStoreKey,Map<number,ProviderPending>>}
+     */
+    private readonly [PENDINGS];
+    [STORE]: Map<any, ProviderStoreValue>;
 }
 /**
- * 依赖对象描述
+ * 存储key
  */
-type DepRefer = {
+export type ProviderStoreKey = any;
+/**
+ * 存储内容
+ */
+export type ProviderStoreValue = {
     /**
-     * 是否必要
+     * 依赖对象信息列表
+     */
+    deps?: Array<ProviderDependency>;
+    /**
+     * 实例化对象
+     */
+    model?: any;
+    /**
+     * 构建工厂
+     */
+    factory: ProviderFactory;
+    /**
+     * 是否缓存实例化对象
+     */
+    needCache: boolean;
+};
+/**
+ * 依赖信息
+ */
+export type ProviderDependency = {
+    /**
+     * 依赖对象id
+     */
+    id: ProviderStoreKey;
+    /**
+     * 依赖是否必要
      */
     required: boolean;
-    /**
-     * 唯一标识
-     */
-    id: string;
 };
 /**
- * 提供器可选项
+ * 构建工厂
  */
-type Opts = {
-    /**
-     * 是否缓存创建结果
-     */
-    cache: boolean;
-};
+export type ProviderFactory = Function;
 /**
- * 注入可选项
+ * 待处理项
  */
-type InjectOpts = {
+export type ProviderPending = {
     /**
-     * 依赖描述对象
+     * 依赖对象信息列表
      */
-    deps: Array<DepRefer>;
+    deps: Array<ProviderDependency>;
     /**
-     * 构建依赖模块成功后执行函数
+     * 成功回调函数
      */
     success: Function;
     /**
-     * 构建依赖模块失败执行函数
+     * 失败回调函数
      */
     fatal: Function;
 };
+declare const PENDING_COUNT: unique symbol;
+declare const PENDINGS: unique symbol;
+declare const STORE: unique symbol;
+export {};

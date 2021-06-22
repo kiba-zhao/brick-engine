@@ -4,7 +4,7 @@
  * @author kiba.x.zhao <kiba.rain@qq.com>
  * @license MIT
  */
-'use strict';
+
 
 exports.all = { a: true, b: 123, c: { c1: 123 } };
 

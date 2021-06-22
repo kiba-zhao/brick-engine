@@ -4,7 +4,7 @@
  * @author kiba.x.zhao <kiba.rain@qq.com>
  * @license MIT
  */
-'use strict';
+
 
 const { ENGINE } = require('./lib/constants');
 const { inject } = require('./lib/inject');

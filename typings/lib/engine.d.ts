@@ -83,13 +83,12 @@ declare class Engine {
      */
     init(): void;
     [OPTIONS]: any;
-    [PROVIDER]: Provider;
+    [PROVIDER]: any;
     [ENV]: any;
     [CONFIG]: any;
 }
 import ModuleFactory = require("./module_factory");
 declare const OPTIONS: unique symbol;
 declare const PROVIDER: unique symbol;
-import Provider = require("./provider");
 declare const ENV: unique symbol;
 declare const CONFIG: unique symbol;

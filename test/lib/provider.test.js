@@ -307,10 +307,22 @@ describe('lib/provider', () => {
       expect(() => provider.define(id, [], () => {})).toThrow(
         WRONG_ID_DUPLICATE
       );
+
+      const circular_id = faker.datatype.string();
+      const WRONG_ID_CIRCULAR = `[brick-engine Provider] define Error: circular ${circular_id.toString()}`;
+
+      expect(() => provider.define(circular_id, [{ id: circular_id }], () => {})).toThrow(
+        WRONG_ID_CIRCULAR
+      );
+      expect(() => provider.define(circular_id, [{ id: circular_id, required: false }], () => {})).toThrow(
+        WRONG_ID_CIRCULAR
+      );
+
     });
   });
 
   describe('contains', () => {
+
     it('id found', () => {
       const id = faker.datatype.string();
       provider.define(id, [], () => {});
@@ -325,5 +337,35 @@ describe('lib/provider', () => {
       const res = provider.contains(id);
       expect(res).toBeFalsy();
     });
+
   });
+
+  describe('pendings', () => {
+
+    it('empty', async () => {
+
+      expect(Array.from(provider.pendings).length).toBe(0);
+
+      const id = faker.datatype.string();
+      provider.define(id, [{ id: faker.datatype.string() }], () => {});
+      expect(Array.from(provider.pendings).length).toBe(0);
+
+      const require_id = faker.datatype.string();
+      const handle = provider.require({ id: require_id });
+      provider.define(require_id, [], () => {});
+      await handle;
+      expect(Array.from(provider.pendings).length).toBe(0);
+
+    });
+
+    it('not empty', () => {
+
+      const ids = [ faker.datatype.string(), faker.datatype.boolean(), faker.datatype.number() ];
+      provider.require(...ids.map(_ => ({ id: _ })));
+
+      expect(Array.from(provider.pendings)).toEqual(expect.arrayContaining(ids));
+    });
+
+  });
+
 });

@@ -34,7 +34,12 @@ export class Provider {
      * @param {Map<ProviderStoreKey,ProviderStoreValue>} [store] 存储对象
      */
     constructor(store?: Map<ProviderStoreKey, ProviderStoreValue>);
-    get pendings(): void;
+    /**
+     * 获取待处理依赖id列表
+     * @readonly
+     * @type {IterableIterator<any>}
+     */
+    readonly get pendings(): IterableIterator<any>;
     /**
      * 是否存在指定模型
      * @param {ProviderStoreKey} id 模型id
@@ -44,9 +49,9 @@ export class Provider {
     /**
      * 请求依赖模型
      * @param {...ProviderDependency} deps 模型依赖
-     * @return {Array<any>} 模块数组
+     * @return {Promise<Array<any>>} 模块数组
      */
-    require(...deps: ProviderDependency[]): Array<any>;
+    require(...deps: ProviderDependency[]): Promise<Array<any>>;
     /**
      * 定义模型
      * @param {ProviderStoreKey} id 模型Id

@@ -73,6 +73,7 @@
       "^@/(.*)$": "<rootDir>/$1"
     },
     "transform": {},
+    "coverageProvider": "v8",
     "collectCoverageFrom": [
       "bin/**/*.js",
       "lib/**/*.js",

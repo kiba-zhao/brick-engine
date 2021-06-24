@@ -5,10 +5,10 @@ export const MODULE_KEY: string;
  */
 export class MetadataManager {
     /**
-     * 元数据管理器构造函数
-     * @class
-     * @param {any} [property] 用于保存记录元数据的属性名
-     */
+       * 元数据管理器构造函数
+       * @class
+       * @param {any} [property] 用于保存记录元数据的属性名
+       */
     constructor(property?: any);
     /**
      *注入元数据方法
@@ -19,7 +19,7 @@ export class MetadataManager {
     /**
      *提取目标对象的元数据
      * @param {any} target 目标对象
-     * @returns {Metadata[]} 目标对象包含的所有元数据列表
+     * @return {Metadata[]} 目标对象包含的所有元数据列表
      */
     extract(target: any): Metadata[];
     /**

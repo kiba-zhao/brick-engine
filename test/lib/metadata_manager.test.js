@@ -6,8 +6,8 @@
  */
 
 
-import { MetadataManager, MODULE_KEY } from '../../lib/metadata_manager';
-import faker from 'faker';
+import { MODULE_KEY } from '../../lib/metadata_manager';
+// import faker from 'faker';
 
 describe('lib/metadata_manager', () => {
 
@@ -15,22 +15,22 @@ describe('lib/metadata_manager', () => {
     expect(MODULE_KEY).toBe('brick-engine:MetadataManager');
   });
 
-  describe('MetadataManager', () => {
+  // describe('MetadataManager', () => {
 
-    /**
-     * @type MetadataManager
-     */
-    let manager;
+  //   /**
+  //    * @type MetadataManager
+  //    */
+  //   let manager;
 
-    beforeEach(() => {
-      manager = new MetadataManager();
-    });
+  //   beforeEach(() => {
+  //     manager = new MetadataManager();
+  //   });
 
-    describe('inject', () => {
+  //   describe('inject', () => {
 
 
-    });
+  //   });
 
-  });
+  // });
 
 });

@@ -1,3 +1,4 @@
+export const MODULE_KEY: string;
 /**
  * 存储key
  * @typedef {any} ProviderStoreKey
@@ -8,7 +9,6 @@
  * @property {Array<ProviderDependency>} [deps] 依赖对象信息列表
  * @property {any} [model] 实例化对象
  * @property {ProviderFactory} factory 构建工厂
- * @property {boolean} needCache 是否缓存实例化对象
  */
 /**
  * 依赖信息
@@ -92,10 +92,6 @@ export type ProviderStoreValue = {
      * 构建工厂
      */
     factory: ProviderFactory;
-    /**
-     * 是否缓存实例化对象
-     */
-    needCache: boolean;
 };
 /**
  * 依赖信息

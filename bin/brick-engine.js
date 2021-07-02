@@ -8,7 +8,8 @@
  */
 
 
-const Engine = require('../lib/engine');
+// import { Engine } from '../lib/engine';
 
-const engine = new Engine();
-engine.init();
+
+// const engine = new Engine();
+// engine.install(app);

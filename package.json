@@ -5,8 +5,8 @@
   "bin": {
     "brick-engine": "./bin/brick-engine.js"
   },
-  "main": "index.js",
-  "types": "typings/index.d.ts",
+  "main": "lib/index.js",
+  "types": "typings/lib/index.d.ts",
   "type": "module",
   "scripts": {
     "docs": "jsdoc -c conf.json",
@@ -23,9 +23,7 @@
     "package.json",
     "bin",
     "lib",
-    "boot.js",
-    "app.js",
-    "index.js"
+    "plugins"
   ],
   "repository": {
     "type": "git",
@@ -76,8 +74,8 @@
     "coverageProvider": "v8",
     "collectCoverageFrom": [
       "bin/**/*.js",
-      "lib/**/*.js",
-      "*.js"
+      "plugins/**/*.js",
+      "lib/**/*.js"
     ]
   }
 }

@@ -8,7 +8,7 @@
 
 import Debug from 'debug';
 import assert from 'assert';
-import { PACKAGE_NAME } from './constants';
+import { PACKAGE_NAME } from '../lib/constants';
 import { Provider } from '../lib/provider';
 import { MetadataManager } from '../lib/metadata_manager';
 
@@ -56,7 +56,7 @@ export class InjectPlugin {
 
     const provider = this[PROVIDER];
     for (const metadata of metadataQueue) {
-      provider.define(metadata.id, metadata.deps, metadata.factory);
+      provider.define(metadata.id, metadata.deps, module);
     }
   }
 

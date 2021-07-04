@@ -8,8 +8,9 @@
  */
 
 
-// import { Engine } from '../lib/engine';
+import { createEngine } from '../lib';
 
-
-// const engine = new Engine();
-// engine.install(app);
+const app = null;
+createEngine().then(engine=>{
+  engine.install(app);
+});

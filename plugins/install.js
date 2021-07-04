@@ -8,7 +8,7 @@
 
 import Debug from 'debug';
 import assert from 'assert';
-import { PACKAGE_NAME } from './constants';
+import { PACKAGE_NAME } from '../lib/constants';
 import { Engine } from '../lib/engine';
 import { MetadataManager } from '../lib/metadata_manager';
 

@@ -1,4 +1,4 @@
 export { Engine } from "./engine";
 export { Provider } from "./provider";
-export { MetadataManager } from "./metadata_manager";
-export { createEngine } from "./utils";
+export * from "./utils";
+export { inject, extract } from "./metadata";

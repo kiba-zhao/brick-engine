@@ -214,6 +214,7 @@ describe('lib/provider', () => {
     });
 
     describe('define', () => {
+
       it('define class', async () => {
         const ids = [ 'model1', 'model2', 'model3' ];
         const pre_optional = await provider.require(
@@ -328,6 +329,7 @@ describe('lib/provider', () => {
         );
 
       });
+
     });
 
     describe('contains', () => {
@@ -373,6 +375,19 @@ describe('lib/provider', () => {
         provider.require(...ids.map(_ => ({ id: _ })));
 
         expect(Array.from(provider.pendings)).toEqual(expect.arrayContaining(ids));
+      });
+
+      it('pendings with deps', async () => {
+
+        const id = Symbol('id');
+        const nextID = Symbol('next_id');
+        const pendingID = Symbol('pending_id');
+        const pendingNextID = Symbol('pending_next_id');
+        provider.require({ id }, { id: nextID });
+        provider.define(id, [{ id: pendingID }, { id: pendingNextID }], ModelClass);
+        provider.define(nextID, [{ id: pendingID }], ModelClass);
+
+        expect(Array.from(provider.pendings)).toEqual(expect.arrayContaining([ pendingID, pendingNextID ]));
       });
 
     });

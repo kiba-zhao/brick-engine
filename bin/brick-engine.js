@@ -11,6 +11,6 @@
 import { createEngine } from '../lib';
 
 const app = null;
-createEngine().then(engine=>{
+createEngine().then(engine => {
   engine.install(app);
 });

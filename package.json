@@ -5,8 +5,8 @@
   "bin": {
     "brick-engine": "./bin/brick-engine.js"
   },
-  "main": "lib/index.js",
-  "types": "typings/lib/index.d.ts",
+  "main": "index.js",
+  "types": "typings/index.d.ts",
   "type": "module",
   "scripts": {
     "docs": "jsdoc -c conf.json",
@@ -75,7 +75,8 @@
     "collectCoverageFrom": [
       "bin/**/*.js",
       "plugins/**/*.js",
-      "lib/**/*.js"
+      "lib/**/*.js",
+      "!**/index.js"
     ]
   }
 }

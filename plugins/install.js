@@ -10,9 +10,8 @@ import Debug from 'debug';
 import assert from 'assert';
 import { PACKAGE_NAME } from '../lib/constants';
 import { Engine } from '../lib/engine';
-import { MetadataManager } from '../lib/metadata_manager';
+import { extract } from '../lib/metadata';
 
-const METADATA = Symbol('METADATA');
 const ENGINE = Symbol('ENGINE');
 
 export const MODULE_SCOPE = Symbol('MODULE_SCOPE');
@@ -24,35 +23,36 @@ export class InstallPlugin {
   /**
    * 模块安装插件构造函数
    * @class
-   * @param {MetadataManager} metadata 元数据管理器实例
    * @param {Engine} engine 引擎实例
    */
-  constructor(metadata, engine) {
+  constructor(engine) {
 
-    debug('constructor %s', metadata, engine);
+    debug('constructor %s', engine);
 
-    assert(
-      metadata instanceof MetadataManager,
-      `[${MODULE_KEY}] constructor Error: wrong metadata`
-    );
     assert(
       engine instanceof Engine,
       `[${MODULE_KEY}] constructor Error: wrong engine`
     );
 
-    this[METADATA] = metadata;
     this[ENGINE] = engine;
   }
 
+  /**
+   *检查是否为匹配模块
+   * @param {import("../lib/engine").EngineModule} module 检查的模块
+   * @return {boolean} true:匹配/false:不匹配
+   */
   match(module) {
-    const metadataManager = this[METADATA];
-    const metadataQueue = metadataManager.extract(module, { scope: MODULE_SCOPE });
+    const metadataQueue = extract(module, { scope: MODULE_SCOPE });
     return metadataQueue.length > 0;
   }
 
+  /**
+   *使用模块方法
+   * @param {import("../lib/engine").EngineModule} module 使用的模块
+   */
   async use(module) {
-    const metadataManager = this[METADATA];
-    const metadataQueue = metadataManager.extract(module, { scope: MODULE_SCOPE });
+    const metadataQueue = extract(module, { scope: MODULE_SCOPE });
 
     const engine = this[ENGINE];
     for (const metadata of metadataQueue) {

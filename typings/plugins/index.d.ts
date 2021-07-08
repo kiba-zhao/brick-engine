@@ -1,3 +1,3 @@
-export { InstallPlugin, MODULE_SCOPE } from "./install";
-export { MountPlugin, PLUGIN_SCOPE } from "./mount";
-export { InjectPlugin, DI_SCOPE } from "./inject";
+export { InstallPlugin, MODULE_SCOPE } from "./install.js";
+export { MountPlugin, PLUGIN_SCOPE } from "./mount.js";
+export { InjectPlugin, DI_SCOPE } from "./inject.js";

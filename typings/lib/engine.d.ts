@@ -60,5 +60,5 @@ export type EngineModule = any;
 declare const ENGINE_MODULES: unique symbol;
 declare const ENGINE_PLUGINS: unique symbol;
 declare const ENGINE_PROVIDER: unique symbol;
-import { Provider } from "./provider";
+import { Provider } from "./provider.js";
 export {};

@@ -21,5 +21,5 @@ export class InstallPlugin {
     [ENGINE]: Engine;
 }
 declare const ENGINE: unique symbol;
-import { Engine } from "../lib/engine";
+import { Engine } from "../lib/engine.js";
 export {};

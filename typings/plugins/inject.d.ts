@@ -12,5 +12,5 @@ export class InjectPlugin {
     [PROVIDER]: Provider;
 }
 declare const PROVIDER: unique symbol;
-import { Provider } from "../lib/provider";
+import { Provider } from "../lib/provider.js";
 export {};

@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-export {};
+export const MODULE_KEY: string;

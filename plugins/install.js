@@ -8,9 +8,9 @@
 
 import Debug from 'debug';
 import assert from 'assert';
-import { PACKAGE_NAME } from '../lib/constants';
-import { Engine } from '../lib/engine';
-import { extract } from '../lib/metadata';
+import { PACKAGE_NAME } from '../lib/constants.js';
+import { Engine } from '../lib/engine.js';
+import { extract } from '../lib/metadata.js';
 
 const ENGINE = Symbol('ENGINE');
 
